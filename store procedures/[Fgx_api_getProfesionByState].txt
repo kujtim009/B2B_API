@@ -1,0 +1,35 @@
+USE [InsertTool]
+GO
+/****** Object:  StoredProcedure [dbo].[Fgx_api_getProfesionByState]    Script Date: 11/8/2019 10:05:25 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[Fgx_api_getProfesionByState]
+@Lic_type varchar(30) = NULL,
+@State varchar(3) = NULL
+as
+begin
+Declare @mainFilter_sql nvarchar(max)
+	Set @mainFilter_sql = 'select DGX_Profession, 
+						   count(DGX_Profession) as [Count] from Api_Fgx_lic_state_prof where 1 = 1'
+
+	IF @Lic_type IS NOT NULL
+		SET @mainFilter_sql = @mainFilter_sql + ' and License_type IN (select value from STRING_SPLIT(@LicenseType_prm,'',''))'
+	IF @State IS NOT NULL
+		SET @mainFilter_sql = @mainFilter_sql + ' and Business_state = @State_prm'
+
+	SET @mainFilter_sql = @mainFilter_sql + ' GROUP BY DGX_Profession having count(DGX_Profession) > 1 ORDER BY [Count] DESC'
+		
+		Execute sp_executesql @mainFilter_sql,
+					N'@LicenseType_prm varchar(60),
+					@State_prm varchar(3)',
+					@LicenseType_prm = @Lic_type,
+					@State_prm = @State
+					
+end

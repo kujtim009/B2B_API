@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse, request
 from passlib.hash import sha256_crypt
-from models.user import UserModel, Userinfo, UserCoins
+from models.user import UserModel, Userinfo, UserCoins, UserPrm
 import models.parameters as prm
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import (
@@ -13,6 +13,7 @@ from flask_jwt_extended import (
     get_jwt_identity,
     get_raw_jwt
 )
+import json
 from blacklist import BLACKLIST
 
 
@@ -193,3 +194,43 @@ class GetUserCoins(Resource):
         userid = get_jwt_identity()
         usercoins = UserCoins.getUserCoins(userid)
         return {'coins': usercoins.C_available}
+
+
+class GetUserPrmByName(Resource):
+    @fresh_jwt_required
+    def get(self, prmName=None):
+        userId = get_jwt_identity()
+        jsonParameter = None
+        if prmName is None:
+            reqPrmName = request.args.get('prmname', None)
+            if reqPrmName is None:
+                return {'message': "You need to specify a parameter name!"}
+            else:
+                userParameter = UserPrm.getUserParameter(userId, reqPrmName)
+                if userParameter is not None:
+                    try:
+                        jsonParameter = eval(str(userParameter.prm_value))
+                    except:
+                        jsonParameter = None
+                    
+        else:
+            if userParameter is not None:
+                userParameter = UserPrm.getUserParameter(userId, prmName)
+                jsonParameter = eval(str(userParameter.prm_value))  
+        return {'prm_value': jsonParameter}
+
+
+class AddUserPrm(Resource):
+    @fresh_jwt_required
+    def post(self):
+        userId = get_jwt_identity() 
+        
+        data = request.get_json()
+        print("USER ID: ", userId, "DATA: ", data["prm_name"], data["prm_value"], data["prm_description"])
+        userParameter = UserPrm(userId, data["prm_name"], data["prm_value"], data["prm_description"])
+        if userParameter.prmExist(userId, data["prm_name"]):
+            userParameter.update(userId, data["prm_name"], data["prm_value"])
+            return {'message': 'Parameter Updated succesfuly!'}
+        else:
+            userParameter.save()
+            return {'message': 'Parameter Added succesfuly!'}

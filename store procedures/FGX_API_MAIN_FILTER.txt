@@ -1,0 +1,173 @@
+USE [InsertTool]
+GO
+/****** Object:  StoredProcedure [dbo].[Fgx_api_main_filter]    Script Date: 11/1/2019 3:04:16 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER Proc [dbo].[Fgx_api_main_filter]
+@SelectTop int = 100,
+@State varchar(3) = NULL,
+@Profession varchar(60) = NULL,
+@county varchar(60) = NULL,
+@city varchar(60) = NULL,
+@zipcode varchar(60) = NULL,
+@LicenseNumber varchar(60) = NULL,
+@phone varchar(20) = NULL,
+@email varchar(60) = NULL,
+@employees varchar(60) = NULL,
+@company_name varchar(60) = NULL,
+@company_srchtype varchar(60) = NULL,
+@license_owner varchar(60) = NULL,
+@license_owner_srchtype varchar(60) = NULL
+
+as
+begin
+	Declare @mainFilter_sql nvarchar(max)
+	Set @mainFilter_sql = 'SELECT TOP (@SelectTop_prm) 
+				[DGX_Profession] as [Profesion],
+				[License_Owner_Name] as [License_Owner_Name],
+				[Fictitious_name] as [Legal_Business_Name],
+				[Company_name] as [DBA_Fictitious_Name],
+				[Owner_name] as [Owner_Name],
+				[Business_id_number] as [Business_SSN],
+				[Business_phone] as [Phone_Number],
+				[Business_email] as [email],
+				[Business_mailing_address_1] as [Mailing_Address_Line_1],
+				[Business_mailing_address_2] as [Mailing_Address_Line_2],
+				[Business_mailing_city] as [Mailing_Address_City],
+				[Business_mailing_state] as [Mailing_Address_State],
+				[Business_mailing_zip_5] as [Mailing_Address_Zip],
+				[Business_address_1] as [Primary_Location_Line_1],
+				[Business_address_2] as [Primary_Location_Line_2],
+				[Business_city] as [Primary_Location_City],
+				[Business_state] as [Primary_Location_State],
+				dbo.fnConcatZip(Business_zip_5,Business_zip_4) as [Primary_Location_Zip],
+				[Location_address_1] as [Additional_Business_Address_3_Line_1],
+				[Location_address_2] as [Additional_Business_Address_3_Line_2],
+				[Location_city] as [Additional_Business_Address_3_City],
+				[Location_state] as [Additional_Business_Address_3_State],
+				[Location_zip_5] as [Additional_Business_Address_3_Zip],
+				[Other_business_add1] as [Additional_Business_Address_4_Line_1],
+				[Other_business_add2] as [Additional_Business_Address_4_Line_2],
+				[Other_business_city] as [Additional_Business_Address_4_City],
+				[Other_business_state] as [Additional_Business_Address_4_State],
+				[Other_business_zip5] as [Additional_Business_Address_4_Zip],
+				[Owner_address_1] as [License_Owner_Address_Line_1],
+				[Owner_address_2] as [License_Owner_Address_Line_2],
+				[Owner_city] as [License_Owner_Address_City],
+				[Owner_state] as [License_Owner_Address_State],
+				[Owner_zip_5] as [License_Owner_Address_Zip],
+				[County] as [County],
+				[Business_description] as [Business_Description],
+				[SIC_code] as [SIC_Code],
+				[NAICS_code] as [NAICS_Code],
+				[Location_start_date] as [In_Business_Since_Info],
+				[Business_URL] as [URL_of_business_filing_license],
+				[Number_of_employees] as [Number_of_Employees],
+				[Longitude_Latitude] as [Longitude_Latitude],
+				[Ownership_business_type] as [Entity_Type],
+				[Home_based] as [Home_Based_Business],
+				[Record_Date] as [Date_Reported],
+				[Compiled_Date] as [Date_Information],
+				[License_Number] as [License],
+				[Certification_number_1] as [Certificate],
+				[Account_Number] as [Account_Number],
+				[Original_start_date] as [Issue_Date],
+				[Effective_date] as [Start_Date_of_License],
+				[Cancellation_Date] as [Cancellation_Date],
+				[End_Date] as [End_Date],
+				[Expiration_date] as [Expiration_Date_of_License],
+				[Status] as [Status_License_Description],
+				[Status_of_License_Code] as [Status_License_Code],
+				[License_Acronym_description] as [License_Type],
+				[Profession] as [Profession_Type_Occupation_Type],
+				[License_description] as [License_Classifications],
+				[Specialty] as [Additional_Business_License_Descriptions],
+				[Source_of_data] as [Source_of_data],
+				[Licensing_Board] as [URL],
+				[Provider_Source_Data_Key] as [Provider_Source_Data_Key],
+				[Vendor_Name_ID] as [Data_Provider_NameID],
+				[File_name] as [File_name] 
+							from Master_Layout with(nolock) where 1 = 1'
+
+				IF @State IS NOT NULL
+					SET @mainFilter_sql = @mainFilter_sql + ' and Business_state = @State_prm'
+				IF @Profession IS NOT NULL
+					SET @mainFilter_sql = @mainFilter_sql + ' and DGX_Profession = @Profession_prm'
+				IF @county IS NOT NULL
+					SET @mainFilter_sql = @mainFilter_sql + ' and County = @county_prm'
+				IF @city IS NOT NULL
+					SET @mainFilter_sql = @mainFilter_sql + ' and Business_city = @city_prm'
+				IF @zipcode IS NOT NULL
+					SET @mainFilter_sql = @mainFilter_sql + ' and Business_zip_5 = @zipcode_prm'
+				IF @LicenseNumber IS NOT NULL
+					SET @mainFilter_sql = @mainFilter_sql + ' and License_Number = @LicenseNumber_prm'
+				IF @phone IS NOT NULL
+					SET @mainFilter_sql = @mainFilter_sql + ' and Business_phone = @phone_prm'
+				IF @email IS NOT NULL
+					SET @mainFilter_sql = @mainFilter_sql + ' and Business_email = @email_prm'
+				IF @employees IS NOT NULL
+					SET @mainFilter_sql = @mainFilter_sql + ' and Number_of_employees = @employees_prm'
+				
+
+
+				IF (@company_name IS NOT NULL and @company_srchtype = 1)
+					SET @mainFilter_sql = @mainFilter_sql + ' and Company_name = @company_name_prm'
+
+			    ELSE IF (@company_name IS NOT NULL and @company_srchtype = 2)
+					SET @mainFilter_sql = @mainFilter_sql + ' and Company_name LIKE CONCAT(@company_name_prm, ''%'')'
+
+				ELSE IF (@company_name IS NOT NULL and @company_srchtype = 3)
+					SET @mainFilter_sql = @mainFilter_sql + ' and Company_name LIKE CONCAT(''%'', @company_name_prm, ''%'')'				
+				
+				
+				IF (@license_owner IS NOT NULL and @license_owner_srchtype = 1)
+					SET @mainFilter_sql = @mainFilter_sql + ' and License_Owner_Name = @license_owner_prm'
+
+			    ELSE IF (@license_owner IS NOT NULL and @license_owner_srchtype = 2)
+					SET @mainFilter_sql = @mainFilter_sql + ' and License_Owner_Name LIKE CONCAT(@license_owner_prm, ''%'')'
+
+				ELSE IF (@license_owner IS NOT NULL and @license_owner_srchtype = 3)
+					SET @mainFilter_sql = @mainFilter_sql + ' and License_Owner_Name LIKE CONCAT(''%'', @license_owner_prm, ''%'')'
+
+				
+				Execute sp_executesql @mainFilter_sql,
+					N'@SelectTop_prm int,
+					@State_prm varchar(3),
+					@Profession_prm varchar(60),
+					@county_prm varchar(60),
+					@city_prm varchar(60),
+					@zipcode_prm varchar(60),
+					@LicenseNumber_prm varchar(60),
+					@phone_prm varchar(20),
+					@email_prm varchar(60),
+					@employees_prm varchar(60),
+					@company_name_prm varchar(60),
+					@license_owner_prm varchar(60)',
+					@SelectTop_prm = @SelectTop,
+					@State_prm = @State,
+					@Profession_prm = @Profession,
+					@county_prm = @county,
+					@city_prm = @city,
+					@zipcode_prm = @zipcode,
+					@LicenseNumber_prm = @LicenseNumber,
+					@phone_prm = @phone,
+					@email_prm = @email,
+					@employees_prm = @employees,
+					@company_name_prm = @company_name,
+					@license_owner_prm = @license_owner
+		
+			/*************************************************************/
+			/*************************************************************/	
+			
+
+	/*************************************************************/
+	/*************************************************************/
+	/*************************************************************/
+	/*************************************************************/
+	/*************************************************************/
+	/*************************************************************/
+	/*************************************************************/
+	
+end

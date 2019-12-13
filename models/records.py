@@ -5,8 +5,6 @@ from models.user import Userinfo
 
 class ItemModel(db.Model):
     __tablename__ = 'Master_Layout'
-
-
     Record_id = db.Column(db.Integer, primary_key=True)
     License = db.Column('License_Number', db.String(40))
     Primary_Location_State = db.Column('Business_state', db.String(20))
@@ -124,12 +122,14 @@ class RecordSchema(ma.ModelSchema):
 
     @classmethod
     def main_filter(cls, *fields):
+        print("SEARCH FIELDS: ", fields)
         parameters = [x for x in fields]
         parameters.insert(0, cls.record_output)
         if license is None and state is None and prof is None:
             return jsonify({'Records': 'Search input is missing!'})
         else:
-            result = db.engine.execute('Fgx_api_main_filter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)    
+            print("EXECUTED")
+            result = db.engine.execute('Fgx_api_main_filter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)    
 
         fields = cls.get_user_fields()
         record_schema = RecordSchema(many=True, only=cls.get_user_fields())
@@ -138,7 +138,7 @@ class RecordSchema(ma.ModelSchema):
 
     @classmethod
     def getCounts_main_filter(cls, *fields):
-        result = db.engine.execute('Fgx_api_main_counter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
+        result = db.engine.execute('Fgx_api_main_counter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
         for rowe in result:
             return rowe[0]
         return result
@@ -183,11 +183,14 @@ class RecordSchema(ma.ModelSchema):
         result = db.engine.execute(sqlquery)
         return result
 
+
+
     @classmethod
-    def getProfesionByState(cls, state):
-        # sqlquery = "select DGX_Profession, count(DGX_Profession) from Master_layout with(nolock) group by DGX_Profession order by DGX_Profession asc"
-        result = db.engine.execute('Fgx_api_getProfesionByState ?', [state])
-        return result    
+    def getProfesionByLictypeState(cls, state=None, licenseType = 'all', professions=None):
+        print("GET PROFESSION: ", [None if licenseType=='all' else licenseType, state, professions])
+        result = db.engine.execute('Fgx_api_getProfesionByState ?, ?, ?', [None if licenseType=='all' else licenseType, state, professions])
+        return result 
+
 
     @classmethod
     def getCounts_lsp(cls, license, state, prof):

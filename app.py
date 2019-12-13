@@ -15,7 +15,9 @@ from resources.user import (
         TestAPI,
         removeUserFields, 
         AddUserCoins,
-        GetUserCoins)
+        GetUserCoins,
+        GetUserPrmByName,
+        AddUserPrm)
 from models.user import UserModel
 import models.parameters as prm
 from resources.records import (
@@ -39,8 +41,8 @@ from resources.records import (
 app = Flask(__name__)
 CORS(app)
 # quoted = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=192.168.2.198\ITPLF;UID=" + prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
-quoted = urllib.parse.quote_plus("DRIVER={ODBC Driver 17 for SQL Server};SERVER=208.118.231.180,21201;UID=" + prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
-# quoted = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=208.118.231.180,21201;UID=" + prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
+# quoted = urllib.parse.quote_plus("DRIVER={ODBC Driver 17 for SQL Server};SERVER=208.118.231.180,21201;UID=" + prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
+quoted = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=208.118.231.180,21201;UID=" + prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect={}".format(quoted)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -121,8 +123,11 @@ api.add_resource(getCurUserFields, '/usersField')
 api.add_resource(Add_allowed_fields, '/addUserFields')
 api.add_resource(removeUserFields, '/removeusrfields')
 api.add_resource(GetAllFieldNames, '/all_fields')
-api.add_resource(AddUserCoins, '/addUserCoins'),
+api.add_resource(AddUserCoins, '/addUserCoins')
 api.add_resource(GetUserCoins, '/getcoins')
+
+api.add_resource(AddUserPrm, '/adduserprm')
+api.add_resource(GetUserPrmByName, '/getuserprm')
 
 api.add_resource(Records_by_main_filter, '/mlf_filter')
 api.add_resource(GetRecCounts_Main_filter, '/mlf_count')

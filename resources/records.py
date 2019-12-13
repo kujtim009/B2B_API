@@ -5,8 +5,10 @@ from flask_jwt_extended import (
     fresh_jwt_required,
     get_jwt_identity)
 from models.records import RecordSchema
-from models.user import Userinfo
+from models.user import Userinfo, UserPrm
 from models.layout import LayoutModel
+import json
+
 
 class Record_by_license(Resource):
     @jwt_required
@@ -101,10 +103,28 @@ class getProfessions(Resource):
     @jwt_required
     def get(self):
         state = request.args.get('state', None)
-        if state is None:
+        licenseType = request.args.get('license_type', 'all')
+
+        userId = get_jwt_identity()
+        try:
+            userProfessions = UserPrm.getUserParameter(userId, 'Professions').prm_value
+            userProfessions =  eval(userProfessions)
+            userProfessionSearch = userProfessions["professions"]
+            print("PROFESSIONS ALLOWED: ", userProfessionSearch)
+            if userProfessionSearch == "":
+                userProfessionSearch = None
+        except:
+            userProfessionSearch = None
+        
+
+
+
+        if state is None and licenseType == 'all':
             record = RecordSchema.getProfessions()
         else:
-            record = RecordSchema.getProfesionByState(state)
+            print("LICENSE TYPE000: ", licenseType)
+            record = RecordSchema.getProfesionByLictypeState(licenseType=licenseType, state=state, professions=userProfessionSearch)
+
         if record:
             test =  {key: value for (key, value) in record}
             return test
@@ -158,7 +178,9 @@ class Records_by_main_filter(Resource):
     @jwt_required
     def get(self):
         
+        licenseType = request.args.get('license_type', None)
         state = request.args.get('state', None)
+        state = None if state == 'all' else state
         prof = request.args.get('profession', None)
         county = request.args.get('county', None)
         city = request.args.get('city', None)
@@ -172,11 +194,32 @@ class Records_by_main_filter(Resource):
         srch_type_comp = request.args.get('srch_type_comp', None)
         lic_owner = request.args.get('lic_owner', None)
         srch_type_licO = request.args.get('srch_type_licO', None)
-        
+        record = None
 
-
-        record = RecordSchema.main_filter(state, prof, county, city, zipcode, license, 
+#check if License type requested is allowed for current user
+        if licenseType is not None and licenseType != "all":
+            if UserPrm.isTypeInPrm(get_jwt_identity(), 'Lic_types', licenseType):
+                record = RecordSchema.main_filter(licenseType, state, prof, county, city, zipcode, license, 
                                             phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
+            else:
+                return {'message': 'You are not authorized to access this data'}, 401
+        else:
+            return {'message': 'You are not authorized to access this dataaa'}, 404
+
+
+#check if proffesion requested is allowed for current user
+        if prof is not None and prof != "":
+            if UserPrm.isProfessionInPrm(get_jwt_identity(), 'Professions', prof):
+                record = RecordSchema.main_filter(licenseType, state, prof, county, city, zipcode, license, 
+                                            phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
+            else:
+                return {'message': 'You are not authorized to access this data'}, 401 
+        else:
+            record = RecordSchema.main_filter(licenseType, state, prof, county, city, zipcode, license, 
+                                            phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
+            return {'message': 'You are not authorized to access this data'}, 404
+
+        
         if record:
             return record
         return {'message': 'record not found'}, 404
@@ -185,8 +228,9 @@ class Records_by_main_filter(Resource):
 class GetRecCounts_Main_filter(Resource):
     @jwt_required
     def get(self):
-
+        licenseType = request.args.get('license_type', None)
         state = request.args.get('state', None)
+        state = None if state == 'all' else state
         prof = request.args.get('profession', None)
         county = request.args.get('county', None)
         city = request.args.get('city', None)
@@ -200,8 +244,8 @@ class GetRecCounts_Main_filter(Resource):
         srch_type_comp = request.args.get('srch_type_comp', None)
         lic_owner = request.args.get('lic_owner', None)
         srch_type_licO = request.args.get('srch_type_licO', None)
-
-        record = RecordSchema.getCounts_main_filter(state, prof, county, city, zipcode, license, 
+        print("SEARCH PRM", state)
+        record = RecordSchema.getCounts_main_filter(licenseType, state, prof, county, city, zipcode, license, 
                                             phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
         if record:
             return {'count':record}

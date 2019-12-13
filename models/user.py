@@ -1,5 +1,6 @@
 from db import db
 from flask_jwt_extended import get_jwt_claims, get_jwt_identity
+import json
 
 
 class UserModel(db.Model):
@@ -151,3 +152,89 @@ class UserCoins(db.Model):
     def getUserCoins(cls, userID):
         record = cls.query.filter_by(User_id = userID).first()
         return record
+
+
+class UserPrm(db.Model):
+    __tablename__ = 'Api_Fgx_parameters'
+
+    id = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.Integer, db.ForeignKey('api_fgx_Users.ID'))
+    prm_name = db.Column(db.String(50))
+    prm_value = db.Column(db.String(50))
+    prm_description = db.Column(db.String(100))
+    myRlFields = db.relationship('UserModel', backref='UserForPrm')
+
+    def __init__(self, userId, prmName, prmValue, prmDescription):
+        self.uid = userId
+        self.prm_name = prmName
+        self.prm_value = prmValue
+        self.prm_description = prmDescription
+
+    def json(self):
+        return {
+            'User_id':self.userId,
+            'prm_name':self.prmName,
+            'prm_value':self.prmValue,
+            'prm_description':self.prmDescription
+        }
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def update(self,userId, prmName, prmValue):
+        record = self.query.filter_by(uid=userId, prm_name=prmName).first()
+        record.prm_value = prmValue
+        print("parameter: {}".format(prmValue))
+        db.session.commit()
+
+    @classmethod
+    def prmExist(cls, userID, prmName):
+        record = cls.query.filter_by(uid=userID, prm_name=prmName).count()
+        if record >= 1:
+            return True
+        return False
+    
+    @classmethod
+    def getUserParameter(cls, userId, prmName):
+        record = cls.query.filter_by(uid = userId, prm_name = prmName).first()
+        return record
+    
+    @classmethod
+    def isTypeInPrm(cls, userId, prmName, licType):
+        record = cls.query.filter_by(uid = userId, prm_name = prmName).first()
+        print("isTypeInPrm: ")
+        if record:
+            listOfTypes = eval(record.prm_value)
+            print(listOfTypes)
+            listOfTypesSearched = licType.split(",")
+
+            print("PRM VALUE: ", listOfTypes, "SEARCH VAL: ", listOfTypesSearched)
+            for item in listOfTypesSearched:
+                if item not in listOfTypes:
+                    return False
+                if item not in listOfTypes:
+                    return False
+            return True
+        else:
+            return True
+    
+    @classmethod
+    def isProfessionInPrm(cls, userId, prmName, prof):
+        record = cls.query.filter_by(uid = userId, prm_name = prmName).first()
+        print("isTypeInPrm: ")
+        if record:
+            listOfProffesions = prof.split(",")
+            print(listOfProffesions)
+            listOfTypesSearched = prof.split(",")
+
+            print("PRM VALUE: ", listOfProffesions, "SEARCH VAL: ", listOfTypesSearched)
+            for item in listOfTypesSearched:
+                if item not in listOfProffesions:
+                    return False
+                if item not in listOfProffesions:
+                    return False
+            return True
+        else:
+            return True
+        
