@@ -19,26 +19,25 @@ from blacklist import BLACKLIST
 
 _user_parser = reqparse.RequestParser()
 _user_parser.add_argument('username',
-                        type=str,
-                        required=True,
-                        help="This field cannot be blank."
-                        )
+                          type=str,
+                          required=True,
+                          help="This field cannot be blank."
+                          )
 
 _user_parser.add_argument('password',
-                        type=str,
-                        required=True,
-                        help="This field cannot be blank."
-                        )
+                          type=str,
+                          required=True,
+                          help="This field cannot be blank."
+                          )
 
 _user_parser.add_argument('access_level',
-                        type=str,
-                        required=False,
-                        help="This field cannot be blank."
-                        )
+                          type=str,
+                          required=False,
+                          help="This field cannot be blank."
+                          )
 
 
-
-_user_fields = reqparse.RequestParser()                     
+_user_fields = reqparse.RequestParser()
 
 
 class UserRegister(Resource):
@@ -72,9 +71,10 @@ class Add_allowed_fields(Resource):
                 userid = row["User_id"]
 
             fieldName = row["Field_name"]
-            
+
             if Userinfo.fieldExist_in_user(userid, fieldName) is not True:
-                userfields = Userinfo(userid, row["View_state"], row["File_name"], fieldName, row["Order"])
+                userfields = Userinfo(
+                    userid, row["View_state"], row["File_name"], fieldName, row["Order"])
                 userfields.save_to_db()
             else:
                 message = ", one or more fields already existed on the list!"
@@ -118,9 +118,38 @@ class UserLogin(Resource):
             refresh_token = create_refresh_token(user.ID)
             return {
                 'access_token': access_token,
-                'refresh_token': refresh_token
+                'refresh_token': refresh_token,
+                'userId': user.ID,
+                'accessLevel': user.access_level
             }, 200
         return {'message': 'Invalid credentials'}, 401
+
+
+class CheckAuth(Resource):
+    @fresh_jwt_required
+    def get(self, user_id):
+        user = UserModel.find_by_id(user_id)
+        if not user:
+            return {'message': 'User not found'}, 401
+        return {
+            'userId': user.ID,
+            'accessLevel': user.access_level
+        }, 200
+
+    # def get(cls):
+    #     data = _user_parser.parse_args()
+    #     user = UserModel.find_by_username(data['username'])
+    #     # if user and safe_str_cmp(user.password, data['password']):
+    #     if user and sha256_crypt.verify(data['password'], user.password):
+    #         access_token = create_access_token(identity=user.ID, fresh=True)
+    #         refresh_token = create_refresh_token(user.ID)
+    #         return {
+    #             'access_token': access_token,
+    #             'refresh_token': refresh_token,
+    #             'userId': user.ID,
+    #             'accessLevel': user.access_level
+    #         }, 200
+    #     return {'message': 'Invalid credentials'}, 401
 
 
 class UserLogout(Resource):
@@ -144,7 +173,6 @@ class TestAPI(Resource):
         return {'message': prm.sql_username}
 
 
-
 class removeUserFields(Resource):
     @fresh_jwt_required
     def post(self):
@@ -156,8 +184,6 @@ class removeUserFields(Resource):
             fieldID = row["id"]
             Userinfo.deletefield(fieldID)
         return {"message": "Rows deleted succesfuly"}, 201
-
-
 
 
 class AddUserCoins(Resource):
@@ -173,8 +199,8 @@ class AddUserCoins(Resource):
                 cValue = 10000
             elif pckType == "3":
                 cValue = 1000000
-        cost_per_coin  = 0.10 * cValue
-        print("PCK TYPE: ".format(pckType))         
+        cost_per_coin = 0.10 * cValue
+        print("PCK TYPE: ".format(pckType))
         userCoins = UserCoins(userid, cValue, cValue, cost_per_coin, 1)
         if userCoins.fieldExistInUserCoins(userid):
             userCoins.update(userid, cValue)
@@ -186,7 +212,7 @@ class AddUserCoins(Resource):
         else:
             userCoins.save()
         return {'message': 'Thank You for your purchase!'}
-    
+
 
 class GetUserCoins(Resource):
     @fresh_jwt_required
@@ -212,22 +238,24 @@ class GetUserPrmByName(Resource):
                         jsonParameter = eval(str(userParameter.prm_value))
                     except:
                         jsonParameter = None
-                    
+
         else:
             if userParameter is not None:
                 userParameter = UserPrm.getUserParameter(userId, prmName)
-                jsonParameter = eval(str(userParameter.prm_value))  
+                jsonParameter = eval(str(userParameter.prm_value))
         return {'prm_value': jsonParameter}
 
 
 class AddUserPrm(Resource):
     @fresh_jwt_required
     def post(self):
-        userId = get_jwt_identity() 
-        
+        userId = get_jwt_identity()
+
         data = request.get_json()
-        print("USER ID: ", userId, "DATA: ", data["prm_name"], data["prm_value"], data["prm_description"])
-        userParameter = UserPrm(userId, data["prm_name"], data["prm_value"], data["prm_description"])
+        print("USER ID: ", userId, "DATA: ",
+              data["prm_name"], data["prm_value"], data["prm_description"])
+        userParameter = UserPrm(
+            userId, data["prm_name"], data["prm_value"], data["prm_description"])
         if userParameter.prmExist(userId, data["prm_name"]):
             userParameter.update(userId, data["prm_name"], data["prm_value"])
             return {'message': 'Parameter Updated succesfuly!'}

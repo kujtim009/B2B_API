@@ -5,46 +5,50 @@ from flask_cors import CORS, cross_origin
 from blacklist import BLACKLIST
 import urllib
 from resources.user import (
-        UserRegister, 
-        User, 
-        UsersList, 
-        UserLogin, 
-        TokenRefresh, 
-        UserLogout, 
-        Add_allowed_fields,
-        TestAPI,
-        removeUserFields, 
-        AddUserCoins,
-        GetUserCoins,
-        GetUserPrmByName,
-        AddUserPrm)
+    UserRegister,
+    User,
+    UsersList,
+    UserLogin,
+    CheckAuth,
+    TokenRefresh,
+    UserLogout,
+    Add_allowed_fields,
+    TestAPI,
+    removeUserFields,
+    AddUserCoins,
+    GetUserCoins,
+    GetUserPrmByName,
+    AddUserPrm)
 from models.user import UserModel
 import models.parameters as prm
 from resources.records import (
-        Record_by_license,
-        RecordList,
-        Record_by_state,
-        Record_by_Individual_name,
-        Record_by_license_and_state_prof,
-        Record_by_company_name,
-        getCurUserFields,
-        getProfessions,
-        Record_by_license_owner,
-        GetAllFieldNames,
-        GetRecCounts_LSP,
-        GetRecCounts_LON,
-        GetRecCounts_CPN,
-        Records_by_main_filter,
-        GetRecCounts_Main_filter,)
+    Record_by_license,
+    RecordList,
+    Record_by_state,
+    Record_by_Individual_name,
+    Record_by_license_and_state_prof,
+    Record_by_company_name,
+    getCurUserFields,
+    getProfessions,
+    Record_by_license_owner,
+    GetAllFieldNames,
+    GetRecCounts_LSP,
+    GetRecCounts_LON,
+    GetRecCounts_CPN,
+    Records_by_main_filter,
+    GetRecCounts_Main_filter,)
 
 
 app = Flask(__name__)
 CORS(app)
 # quoted = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=192.168.2.198\ITPLF;UID=" + prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
-quoted = urllib.parse.quote_plus("DRIVER={ODBC Driver 17 for SQL Server};SERVER=208.118.231.180,21201;UID=" + prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
-# quoted = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=208.118.231.180,21201;UID=" + prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
+quoted = urllib.parse.quote_plus("DRIVER={ODBC Driver 17 for SQL Server};SERVER=208.118.231.180,21201;UID=" +
+                                 prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
+# quoted = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=208.118.231.180,21201;UID=" +
+#                                  prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect={}".format(quoted)
+app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect={}".format(
+    quoted)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_SECRET_KEY'] = prm.jwt_secret_key_stored
@@ -55,6 +59,7 @@ app.config['ENV'] = ''
 api = Api(app)
 
 jwt = JWTManager(app)  # /auth
+
 
 @jwt.user_claims_loader
 def add_claims_to_jwt(identity):
@@ -117,6 +122,7 @@ api.add_resource(UserRegister, '/register')
 api.add_resource(User, '/user/<int:user_id>')
 api.add_resource(UsersList, '/users')
 api.add_resource(UserLogin, '/auth')
+api.add_resource(CheckAuth, '/checkauth/<int:user_id>')
 api.add_resource(TokenRefresh, '/refresh')
 api.add_resource(UserLogout, '/logout')
 api.add_resource(getCurUserFields, '/usersField')
