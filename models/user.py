@@ -203,13 +203,10 @@ class UserPrm(db.Model):
     @classmethod
     def isTypeInPrm(cls, userId, prmName, licType):
         record = cls.query.filter_by(uid = userId, prm_name = prmName).first()
-        print("isTypeInPrm: ")
         if record:
             listOfTypes = eval(record.prm_value)
-            print(listOfTypes)
             listOfTypesSearched = licType.split(",")
 
-            print("PRM VALUE: ", listOfTypes, "SEARCH VAL: ", listOfTypesSearched)
             for item in listOfTypesSearched:
                 if item not in listOfTypes:
                     return False
@@ -222,19 +219,24 @@ class UserPrm(db.Model):
     @classmethod
     def isProfessionInPrm(cls, userId, prmName, prof):
         record = cls.query.filter_by(uid = userId, prm_name = prmName).first()
-        print("isTypeInPrm: ")
         if record:
-            listOfProffesions = prof.split(",")
-            print(listOfProffesions)
-            listOfTypesSearched = prof.split(",")
-
-            print("PRM VALUE: ", listOfProffesions, "SEARCH VAL: ", listOfTypesSearched)
-            for item in listOfTypesSearched:
-                if item not in listOfProffesions:
-                    return False
-                if item not in listOfProffesions:
-                    return False
-            return True
-        else:
-            return True
+            listOfAllowedProfessions = eval(record.prm_value)
+            if "professions" in listOfAllowedProfessions:
+                if listOfAllowedProfessions["professions"] != "":
+                    if prof is not None:
+                        if prof not in listOfAllowedProfessions["professions"]:
+                            return False  
+        return True
+    
+    @classmethod
+    def getAllowedProfessions(cls, userId, prmName):
+        record = cls.query.filter_by(uid = userId, prm_name = prmName).first()
+        print("DEALING WITH PROFESIONS")
+        if record:
+            listOfAllowedProfessions = eval(record.prm_value)
+            if "professions" in listOfAllowedProfessions:
+                if listOfAllowedProfessions["professions"] != "":
+                    print("LIST OF ALLOWED PROFESIONS: ",listOfAllowedProfessions["professions"])
+                    return listOfAllowedProfessions["professions"]
+            return None
         

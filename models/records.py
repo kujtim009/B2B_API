@@ -129,7 +129,7 @@ class RecordSchema(ma.ModelSchema):
             return jsonify({'Records': 'Search input is missing!'})
         else:
             print("EXECUTED")
-            result = db.engine.execute('Fgx_api_main_filter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)    
+            result = db.engine.execute('Fgx_api_main_filter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)    
 
         fields = cls.get_user_fields()
         record_schema = RecordSchema(many=True, only=cls.get_user_fields())
@@ -138,7 +138,7 @@ class RecordSchema(ma.ModelSchema):
 
     @classmethod
     def getCounts_main_filter(cls, *fields):
-        result = db.engine.execute('Fgx_api_main_counter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
+        result = db.engine.execute('Fgx_api_main_counter ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
         for rowe in result:
             return rowe[0]
         return result
