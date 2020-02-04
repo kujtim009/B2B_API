@@ -236,10 +236,16 @@ class GetUserPrmByName(Resource):
         jsonParameter = None
         if prmName is None:
             reqPrmName = request.args.get('prmname', None)
+            prmUserID = request.args.get('uid', None)
             if reqPrmName is None:
                 return {'message': "You need to specify a parameter name!"}
             else:
-                userParameter = UserPrm.getUserParameter(userId, reqPrmName)
+                if prmUserID is not None:
+                    userParameter = UserPrm.getUserParameter(
+                        prmUserID, reqPrmName)
+                else:
+                    userParameter = UserPrm.getUserParameter(
+                        userId, reqPrmName)
                 if userParameter is not None:
                     try:
                         jsonParameter = eval(str(userParameter.prm_value))
@@ -248,7 +254,11 @@ class GetUserPrmByName(Resource):
 
         else:
             if userParameter is not None:
-                userParameter = UserPrm.getUserParameter(userId, prmName)
+                if prmUserID is not None:
+                    userParameter = UserPrm.getUserParameter(
+                        prmUserID, prmName)
+                else:
+                    userParameter = UserPrm.getUserParameter(userId, prmName)
                 jsonParameter = eval(str(userParameter.prm_value))
         return {'prm_value': jsonParameter}
 
