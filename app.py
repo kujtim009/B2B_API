@@ -15,6 +15,7 @@ from resources.user import (
     Add_allowed_fields,
     TestAPI,
     removeUserFields,
+    removeAllUserFields,
     AddUserCoins,
     GetUserCoins,
     GetUserPrmByName,
@@ -128,6 +129,7 @@ api.add_resource(UserLogout, '/logout')
 api.add_resource(getCurUserFields, '/usersField')
 api.add_resource(Add_allowed_fields, '/addUserFields')
 api.add_resource(removeUserFields, '/removeusrfields')
+api.add_resource(removeAllUserFields, '/removeallfields/<int:user_id>')
 api.add_resource(GetAllFieldNames, '/all_fields')
 api.add_resource(AddUserCoins, '/addUserCoins')
 api.add_resource(GetUserCoins, '/getcoins')

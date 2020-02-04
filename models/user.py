@@ -100,6 +100,13 @@ class Userinfo(db.Model):
     def deletefield(cls, field_id):
         cls.query.filter_by(ID=field_id).delete()
         db.session.commit()
+    
+    @classmethod
+    def deleteAllField(cls, userID):
+        print("USER ID:", userID)
+        
+        cls.query.filter_by(User_id=userID).delete()
+        db.session.commit()
 
 
 class UserCoins(db.Model):

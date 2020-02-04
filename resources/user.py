@@ -186,6 +186,13 @@ class removeUserFields(Resource):
         return {"message": "Rows deleted succesfuly"}, 201
 
 
+class removeAllUserFields(Resource):
+    @fresh_jwt_required
+    def post(self, user_id):
+        Userinfo.deleteAllField(user_id)
+        return {"message": "Rows deleted succesfuly"}, 201
+
+
 class AddUserCoins(Resource):
     @fresh_jwt_required
     def get(self):
