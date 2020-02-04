@@ -97,7 +97,7 @@ class getCurUserFields(Resource):
         if record:
             # return {'User_fields': list(map(lambda x: x.json(), record))}
             return {'User_fields': [field.json() for field in record]}
-        return {'message': 'No columns available!'}, 404
+        return {'User_fields': []}, 200
 
 
 class getProfessions(Resource):
