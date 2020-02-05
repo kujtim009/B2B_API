@@ -267,14 +267,17 @@ class AddUserPrm(Resource):
     @fresh_jwt_required
     def post(self):
         userId = get_jwt_identity()
+        prmUserID = request.args.get('uid', None)
+        mainUserID = prmUserID if prmUserID else userId
 
         data = request.get_json()
-        print("USER ID: ", userId, "DATA: ",
+        print("USER ID: ", mainUserID, "DATA: ",
               data["prm_name"], data["prm_value"], data["prm_description"])
         userParameter = UserPrm(
-            userId, data["prm_name"], data["prm_value"], data["prm_description"])
-        if userParameter.prmExist(userId, data["prm_name"]):
-            userParameter.update(userId, data["prm_name"], data["prm_value"])
+            mainUserID, data["prm_name"], data["prm_value"], data["prm_description"])
+        if userParameter.prmExist(mainUserID, data["prm_name"]):
+            userParameter.update(
+                mainUserID, data["prm_name"], data["prm_value"])
             return {'message': 'Parameter Updated succesfuly!'}
         else:
             userParameter.save()
