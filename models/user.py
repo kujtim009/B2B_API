@@ -191,9 +191,10 @@ class UserPrm(db.Model):
     
     def update(self,userId, prmName, prmValue):
         record = self.query.filter_by(uid=userId, prm_name=prmName).first()
-        record.prm_value = prmValue
+        record.prm_value = json.dumps(prmValue)
         print("parameter: {}".format(prmValue))
         db.session.commit()
+        print("SESION COMMITED")
 
     @classmethod
     def prmExist(cls, userID, prmName):

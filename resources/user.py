@@ -271,8 +271,10 @@ class AddUserPrm(Resource):
         mainUserID = prmUserID if prmUserID else userId
 
         data = request.get_json()
+        print("JSON:", data)
         print("USER ID: ", mainUserID, "DATA: ",
               data["prm_name"], data["prm_value"], data["prm_description"])
+
         userParameter = UserPrm(
             mainUserID, data["prm_name"], data["prm_value"], data["prm_description"])
         if userParameter.prmExist(mainUserID, data["prm_name"]):
