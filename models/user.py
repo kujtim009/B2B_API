@@ -10,7 +10,6 @@ class UserModel(db.Model):
     username = db.Column(db.String(80))
     password = db.Column(db.String(80))
     access_level = db.Column(db.String(80))
-    
 
     def __init__(self, username, password, access_level):
         self.username = username
@@ -22,7 +21,7 @@ class UserModel(db.Model):
             'id': self.ID,
             'username': self.username,
             'access_level': self.access_level
-            }
+        }
 
     def save_to_db(self):
         db.session.add(self)
@@ -47,7 +46,7 @@ class UserModel(db.Model):
             return True
         return False
 
-    
+
 class Userinfo(db.Model):
     __tablename__ = 'api_fgx_Users_info'
 
@@ -74,7 +73,7 @@ class Userinfo(db.Model):
             'File_name': self.File_name,
             'Field_name': self.Field_name,
             'Order': self.Order
-            }
+        }
 
     @classmethod
     def get_user_fields(cls, userid):
@@ -82,11 +81,12 @@ class Userinfo(db.Model):
 
     @classmethod
     def get_all_user_fields(cls, userid):
-        return cls.query.filter_by(User_id=userid).all()    
+        return cls.query.filter_by(User_id=userid).all()
 
     @classmethod
     def fieldExist_in_user(cls, userID, fieldname):
-        record = cls.query.filter_by(User_id = userID, Field_name = fieldname).count()
+        record = cls.query.filter_by(
+            User_id=userID, Field_name=fieldname).count()
         if record >= 1:
             return True
         return False
@@ -95,16 +95,15 @@ class Userinfo(db.Model):
         db.session.add(self)
         db.session.commit()
 
-
     @classmethod
     def deletefield(cls, field_id):
         cls.query.filter_by(ID=field_id).delete()
         db.session.commit()
-    
+
     @classmethod
     def deleteAllField(cls, userID):
         print("USER ID:", userID)
-        
+
         cls.query.filter_by(User_id=userID).delete()
         db.session.commit()
 
@@ -129,18 +128,18 @@ class UserCoins(db.Model):
 
     def json(self):
         return {
-            'User_id':self.User_id,
-            'C_purchased':self.C_purchased,
-            'C_available':self.C_available,
-            'Cost_per_c':self.Cost_per_c,
-            'Status':self.Status
+            'User_id': self.User_id,
+            'C_purchased': self.C_purchased,
+            'C_available': self.C_available,
+            'Cost_per_c': self.Cost_per_c,
+            'Status': self.Status
         }
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
-    
-    def update(self,userid, coins):
+
+    def update(self, userid, coins):
         record = self.query.filter_by(User_id=userid).first()
         record.C_purchased = coins
         record.C_available = record.C_available + coins
@@ -150,14 +149,14 @@ class UserCoins(db.Model):
 
     @classmethod
     def fieldExistInUserCoins(cls, userID):
-        record = cls.query.filter_by(User_id = userID).count()
+        record = cls.query.filter_by(User_id=userID).count()
         if record >= 1:
             return True
         return False
-    
+
     @classmethod
     def getUserCoins(cls, userID):
-        record = cls.query.filter_by(User_id = userID).first()
+        record = cls.query.filter_by(User_id=userID).first()
         return record
 
 
@@ -166,9 +165,9 @@ class UserPrm(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     uid = db.Column(db.Integer, db.ForeignKey('api_fgx_Users.ID'))
-    prm_name = db.Column(db.String(50))
-    prm_value = db.Column(db.String(50))
-    prm_description = db.Column(db.String(100))
+    prm_name = db.Column(db.String(150))
+    prm_value = db.Column(db.String(1000))
+    prm_description = db.Column(db.String(500))
     myRlFields = db.relationship('UserModel', backref='UserForPrm')
 
     def __init__(self, userId, prmName, prmValue, prmDescription):
@@ -179,17 +178,17 @@ class UserPrm(db.Model):
 
     def json(self):
         return {
-            'User_id':self.userId,
-            'prm_name':self.prmName,
-            'prm_value':self.prmValue,
-            'prm_description':self.prmDescription
+            'User_id': self.userId,
+            'prm_name': self.prmName,
+            'prm_value': self.prmValue,
+            'prm_description': self.prmDescription
         }
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
-    
-    def update(self,userId, prmName, prmValue):
+
+    def update(self, userId, prmName, prmValue):
         record = self.query.filter_by(uid=userId, prm_name=prmName).first()
         record.prm_value = json.dumps(prmValue)
         print("parameter: {}".format(prmValue))
@@ -202,15 +201,15 @@ class UserPrm(db.Model):
         if record >= 1:
             return True
         return False
-    
+
     @classmethod
     def getUserParameter(cls, userId, prmName):
-        record = cls.query.filter_by(uid = userId, prm_name = prmName).first()
+        record = cls.query.filter_by(uid=userId, prm_name=prmName).first()
         return record
-    
+
     @classmethod
     def isTypeInPrm(cls, userId, prmName, licType):
-        record = cls.query.filter_by(uid = userId, prm_name = prmName).first()
+        record = cls.query.filter_by(uid=userId, prm_name=prmName).first()
         if record:
             listOfTypes = eval(record.prm_value)
             listOfTypesSearched = licType.split(",")
@@ -223,28 +222,28 @@ class UserPrm(db.Model):
             return True
         else:
             return True
-    
+
     @classmethod
     def isProfessionInPrm(cls, userId, prmName, prof):
-        record = cls.query.filter_by(uid = userId, prm_name = prmName).first()
+        record = cls.query.filter_by(uid=userId, prm_name=prmName).first()
         if record:
             listOfAllowedProfessions = eval(record.prm_value)
             if "professions" in listOfAllowedProfessions:
                 if listOfAllowedProfessions["professions"] != "":
                     if prof is not None:
                         if prof not in listOfAllowedProfessions["professions"]:
-                            return False  
+                            return False
         return True
-    
+
     @classmethod
     def getAllowedProfessions(cls, userId, prmName):
-        record = cls.query.filter_by(uid = userId, prm_name = prmName).first()
+        record = cls.query.filter_by(uid=userId, prm_name=prmName).first()
         print("DEALING WITH PROFESIONS")
         if record:
             listOfAllowedProfessions = eval(record.prm_value)
             if "professions" in listOfAllowedProfessions:
                 if listOfAllowedProfessions["professions"] != "":
-                    print("LIST OF ALLOWED PROFESIONS: ",listOfAllowedProfessions["professions"])
+                    print("LIST OF ALLOWED PROFESIONS: ",
+                          listOfAllowedProfessions["professions"])
                     return listOfAllowedProfessions["professions"]
             return None
-        
