@@ -217,8 +217,6 @@ class UserPrm(db.Model):
             for item in listOfTypesSearched:
                 if item not in listOfTypes:
                     return False
-                if item not in listOfTypes:
-                    return False
             return True
         else:
             return True
@@ -228,22 +226,22 @@ class UserPrm(db.Model):
         record = cls.query.filter_by(uid=userId, prm_name=prmName).first()
         if record:
             listOfAllowedProfessions = eval(record.prm_value)
+
             if "professions" in listOfAllowedProfessions:
                 if listOfAllowedProfessions["professions"] != "":
                     if prof is not None:
-                        if prof not in listOfAllowedProfessions["professions"]:
+                        if prof.lower() not in listOfAllowedProfessions["professions"].lower():
                             return False
         return True
 
     @classmethod
     def getAllowedProfessions(cls, userId, prmName):
         record = cls.query.filter_by(uid=userId, prm_name=prmName).first()
-        print("DEALING WITH PROFESIONS")
+
         if record:
             listOfAllowedProfessions = eval(record.prm_value)
             if "professions" in listOfAllowedProfessions:
                 if listOfAllowedProfessions["professions"] != "":
-                    print("LIST OF ALLOWED PROFESIONS: ",
-                          listOfAllowedProfessions["professions"])
+
                     return listOfAllowedProfessions["professions"]
             return None

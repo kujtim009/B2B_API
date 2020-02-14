@@ -43,13 +43,13 @@ from resources.records import (
 app = Flask(__name__)
 CORS(app)
 ## quoted = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=192.168.2.198\ITPLF;UID=" + prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
-quoted = urllib.parse.quote_plus("DRIVER={ODBC Driver 17 for SQL Server};SERVER=208.118.231.180,21201;UID=" +
-                                 prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
-# quoted = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=208.118.231.180,21201;UID=" +
-#                                  prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
+quotedDigitalOcean = urllib.parse.quote_plus("DRIVER={ODBC Driver 17 for SQL Server};SERVER=208.118.231.180,21201;UID=" +
+                                             prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
+quotedLocalPc = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=208.118.231.180,21201;UID=" +
+                                        prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect={}".format(
-    quoted)
+    quotedDigitalOcean)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_SECRET_KEY'] = prm.jwt_secret_key_stored

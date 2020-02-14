@@ -111,6 +111,7 @@ class getProfessions(Resource):
             userProfessions = UserPrm.getUserParameter(
                 userId, 'Professions').prm_value
             userProfessions = eval(userProfessions)
+
             userProfessionSearch = userProfessions["professions"]
             print("PROFESSIONS ALLOWED: ", userProfessionSearch)
             if userProfessionSearch == "":
@@ -119,14 +120,16 @@ class getProfessions(Resource):
             userProfessionSearch = None
 
         if state is None and licenseType == 'all':
+            print("LICENSE: ", licenseType)
             record = RecordSchema.getProfessions()
         else:
-            print("LICENSE TYPE000: ", licenseType)
+            print("LICENSE: ", licenseType)
             record = RecordSchema.getProfesionByLictypeState(
                 licenseType=licenseType, state=state, professions=userProfessionSearch)
 
         if record:
             test = {key: value for (key, value) in record}
+
             return test
         return {'message': 'record not found'}, 404
 
