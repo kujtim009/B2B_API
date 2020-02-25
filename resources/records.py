@@ -137,7 +137,7 @@ class getProfessions(Resource):
 class GetAllFieldNames(Resource):
     @jwt_required
     def get(self):
-        record = LayoutModel.find_by_exportID(2068)
+        record = LayoutModel.find_by_exportID(2071)
         if record:
             return {'Project_fields': [field.json() for field in record]}
         return {'message': 'record not found'}, 404
