@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse, request
 from passlib.hash import sha256_crypt
-from models.user import UserModel, Userinfo, UserCoins, UserPrm
+from models.user import UserModel, UserTimePeriod, Userinfo, UserCoins, UserPrm
 import models.parameters as prm
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import (
@@ -114,13 +114,20 @@ class UserLogin(Resource):
         user = UserModel.find_by_username(data['username'])
         # if user and safe_str_cmp(user.password, data['password']):
         if user and sha256_crypt.verify(data['password'], user.password):
+
+            if int(user.access_level) >= 2 and UserTimePeriod.timePeriodExists(user.ID):
+                if UserTimePeriod.getTimePeriod(user.ID) <= 0:
+                    return {'message': 'Your subscription has expired, contact us for more details!'}, 401
+
             access_token = create_access_token(identity=user.ID, fresh=True)
             refresh_token = create_refresh_token(user.ID)
+
             return {
                 'access_token': access_token,
                 'refresh_token': refresh_token,
                 'userId': user.ID,
-                'accessLevel': user.access_level
+                'accessLevel': user.access_level,
+                'expiresIn': UserTimePeriod.getTimePeriod(user.ID)
             }, 200
         return {'message': 'Invalid credentials'}, 401
 
@@ -129,6 +136,11 @@ class CheckAuth(Resource):
     @fresh_jwt_required
     def get(self, user_id):
         user = UserModel.find_by_id(user_id)
+
+        if int(user.access_level) >= 2 and UserTimePeriod.timePeriodExists(user_id):
+            if UserTimePeriod.getTimePeriod(user.ID) <= 0:
+                return {'message': 'Your subscription has expired, contact us for more details!'}, 401
+
         if not user:
             return {'message': 'User not found'}, 401
         return {
@@ -286,3 +298,23 @@ class AddUserPrm(Resource):
         else:
             userParameter.save()
             return {'message': 'Parameter Added succesfuly!'}
+
+
+class AddUserTimePeriod(Resource):
+    @fresh_jwt_required
+    def post(self):
+        userId = get_jwt_identity()
+        prmUserID = request.args.get('uid', None)
+        mainUserID = prmUserID if prmUserID else userId
+
+        data = request.get_json()
+        print("JSON:", data)
+
+        userTimePeriod = UserTimePeriod(
+            int(mainUserID), data["CreateDate"], data["ExpirationDate"])
+        if userTimePeriod.timePeriodExists(mainUserID):
+            userTimePeriod.update()
+            return {'message': 'User Time Period Updated succesfuly!'}
+        else:
+            userTimePeriod.save()
+            return {'message': 'User Time Period Added succesfuly!'}

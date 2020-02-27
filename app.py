@@ -16,6 +16,7 @@ from resources.user import (
     TestAPI,
     removeUserFields,
     removeAllUserFields,
+    AddUserTimePeriod,
     AddUserCoins,
     GetUserCoins,
     GetUserPrmByName,
@@ -49,7 +50,7 @@ quotedLocalPc = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=208.118.231.
                                         prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect={}".format(
-    quotedDigitalOcean)
+    quotedLocalPc)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_SECRET_KEY'] = prm.jwt_secret_key_stored
@@ -133,6 +134,7 @@ api.add_resource(removeAllUserFields, '/removeallfields/<int:user_id>')
 api.add_resource(GetAllFieldNames, '/all_fields')
 api.add_resource(AddUserCoins, '/addUserCoins')
 api.add_resource(GetUserCoins, '/getcoins')
+api.add_resource(AddUserTimePeriod, '/addusertimeperiod')
 
 api.add_resource(AddUserPrm, '/adduserprm')
 api.add_resource(GetUserPrmByName, '/getuserprm')

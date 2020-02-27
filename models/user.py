@@ -1,6 +1,7 @@
 from db import db
 from flask_jwt_extended import get_jwt_claims, get_jwt_identity
 import json
+from datetime import datetime
 
 
 class UserModel(db.Model):
@@ -106,6 +107,54 @@ class Userinfo(db.Model):
 
         cls.query.filter_by(User_id=userID).delete()
         db.session.commit()
+
+
+class UserTimePeriod(db.Model):
+    __tablename__ = 'Api_Fgx_User_TimePeriod'
+
+    ID = db.Column(db.Integer, primary_key=True)
+    UserID = db.Column(db.Integer, db.ForeignKey('api_fgx_Users.ID'))
+    CreatedDate = db.Column(db.DateTime, nullable=False,
+                            default=datetime.utcnow)
+    ExpiratioinDate = db.Column(db.DateTime, nullable=False,
+                                default=datetime.utcnow)
+    rlFields = db.relationship('UserModel', backref='timeUser')
+
+    def __init__(self, User_id, CreatedDate, ExpiratioinDate):
+        self.UserID = User_id
+        self.CreatedDate = CreatedDate
+        self.ExpiratioinDate = ExpiratioinDate
+
+    def json(self):
+        return {
+            'UserID': self.UserID,
+            'CreatedDate': self.CreatedDate,
+            'ExpiratioinDate': self.ExpiratioinDate,
+        }
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        record = self.query.filter_by(UserID=self.UserID).first()
+        db.session.delete(record)
+        db.session.commit()
+        self.save()
+        print("UPDATE SESION COMMITED")
+
+    @classmethod
+    def getTimePeriod(cls, userId):
+        record = cls.query.filter_by(UserID=userId).first()
+        if record:
+            return (record.ExpiratioinDate - record.CreatedDate).days
+
+    @classmethod
+    def timePeriodExists(cls, userID):
+        record = cls.query.filter_by(UserID=userID).count()
+        if record >= 1:
+            return True
+        return False
 
 
 class UserCoins(db.Model):
