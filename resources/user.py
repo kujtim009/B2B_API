@@ -242,6 +242,20 @@ class GetUserCoins(Resource):
         return {'coins': usercoins.C_available}
 
 
+class GetUserTimePeriod(Resource):
+    @fresh_jwt_required
+    def get(self):
+        userId = get_jwt_identity()
+        prmUserID = request.args.get('uid', None)
+        mainUserID = prmUserID if prmUserID else userId
+        userTime = UserTimePeriod.getTimePeriodFull(mainUserID)
+        return {
+            'CreatedDate': userTime['CreatedDate'],
+            'ExpirationDate': userTime['ExpirationDate'],
+            'Dayes': userTime['Dayes']
+        }
+
+
 class GetUserPrmByName(Resource):
     @fresh_jwt_required
     def get(self, prmName=None):

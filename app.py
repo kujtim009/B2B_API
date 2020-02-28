@@ -17,6 +17,7 @@ from resources.user import (
     removeUserFields,
     removeAllUserFields,
     AddUserTimePeriod,
+    GetUserTimePeriod,
     AddUserCoins,
     GetUserCoins,
     GetUserPrmByName,
@@ -135,6 +136,7 @@ api.add_resource(GetAllFieldNames, '/all_fields')
 api.add_resource(AddUserCoins, '/addUserCoins')
 api.add_resource(GetUserCoins, '/getcoins')
 api.add_resource(AddUserTimePeriod, '/addusertimeperiod')
+api.add_resource(GetUserTimePeriod, '/getusertimeperiod')
 
 api.add_resource(AddUserPrm, '/adduserprm')
 api.add_resource(GetUserPrmByName, '/getuserprm')

@@ -150,6 +150,15 @@ class UserTimePeriod(db.Model):
             return (record.ExpiratioinDate - record.CreatedDate).days
 
     @classmethod
+    def getTimePeriodFull(cls, userId):
+        record = cls.query.filter_by(UserID=userId).first()
+        if record:
+            return {"ExpirationDate": record.ExpiratioinDate.strftime("%m/%d/%Y"),
+                    "CreatedDate": record.CreatedDate.strftime("%m/%d/%Y"),
+                    "Dayes": cls.getTimePeriod(userId)
+                    }
+
+    @classmethod
     def timePeriodExists(cls, userID):
         record = cls.query.filter_by(UserID=userID).count()
         if record >= 1:
