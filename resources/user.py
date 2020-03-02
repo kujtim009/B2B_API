@@ -249,11 +249,13 @@ class GetUserTimePeriod(Resource):
         prmUserID = request.args.get('uid', None)
         mainUserID = prmUserID if prmUserID else userId
         userTime = UserTimePeriod.getTimePeriodFull(mainUserID)
-        return {
-            'CreatedDate': userTime['CreatedDate'],
-            'ExpirationDate': userTime['ExpirationDate'],
-            'Dayes': userTime['Dayes']
-        }
+        if userTime is not None:
+            return {
+                'CreatedDate': userTime['CreatedDate'],
+                'ExpirationDate': userTime['ExpirationDate'],
+                'Dayes': userTime['Dayes']
+            }
+        return {'message': "Time period is not asigned to this user!"}, 404
 
 
 class GetUserPrmByName(Resource):

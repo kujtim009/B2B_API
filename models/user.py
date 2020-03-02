@@ -157,6 +157,7 @@ class UserTimePeriod(db.Model):
                     "CreatedDate": record.CreatedDate.strftime("%m/%d/%Y"),
                     "Dayes": cls.getTimePeriod(userId)
                     }
+        return None
 
     @classmethod
     def timePeriodExists(cls, userID):
