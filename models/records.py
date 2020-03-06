@@ -125,6 +125,23 @@ class RecordSchema(ma.ModelSchema):
         return jsonify({'Records': output})
 
     @classmethod
+    def mainDownload(cls, *fields):
+        print("SEARCH FIELDS: ", fields)
+        parameters = [x for x in fields]
+        # parameters.insert(0, cls.record_output)
+        if license is None and state is None and prof is None:
+            return jsonify({'Records': 'Search input is missing!'})
+        else:
+            print("EXECUTED")
+            result = db.engine.execute(
+                'Fgx_api_main_download ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
+
+        fields = cls.get_user_fields()
+        record_schema = RecordSchema(many=True, only=cls.get_user_fields())
+        output = record_schema.dump(result)
+        return jsonify({'Records': output})
+
+    @classmethod
     def main_filter(cls, *fields):
         print("SEARCH FIELDS: ", fields)
         parameters = [x for x in fields]

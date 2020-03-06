@@ -39,7 +39,8 @@ from resources.records import (
     GetRecCounts_LON,
     GetRecCounts_CPN,
     Records_by_main_filter,
-    GetRecCounts_Main_filter,)
+    GetRecCounts_Main_filter,
+    dnldRecords)
 
 
 app = Flask(__name__)
@@ -143,6 +144,7 @@ api.add_resource(GetUserPrmByName, '/getuserprm')
 
 api.add_resource(Records_by_main_filter, '/mlf_filter')
 api.add_resource(GetRecCounts_Main_filter, '/mlf_count')
+api.add_resource(dnldRecords, '/mlf_dnld')
 
 api.add_resource(Record_by_license_and_state_prof, '/lic_state')
 api.add_resource(Record_by_company_name, '/company_name/<string:company>')

@@ -177,6 +177,48 @@ class GetRecCounts_CPN(Resource):
         return {'message': 'record not found'}, 404
 
 
+class dnldRecords(Resource):
+    @jwt_required
+    def get(self):
+        licenseType = request.args.get('license_type', None)
+        state = request.args.get('state', None)
+        state = None if state == 'all' else state
+        prof = request.args.get('profession', None)
+        county = request.args.get('county', None)
+        city = request.args.get('city', None)
+        zipcode = request.args.get('zipcode', None)
+
+        license = request.args.get('license', None)
+        phone = request.args.get('phone', None)
+        email = request.args.get('email', None)
+        employees = request.args.get('employees', None)
+        company_name = request.args.get('company_name', None)
+        srch_type_comp = request.args.get('srch_type_comp', None)
+        lic_owner = request.args.get('lic_owner', None)
+        srch_type_licO = request.args.get('srch_type_licO', None)
+
+        allowedProfessions = None
+        record = None
+
+# check if License type requested is allowed for current user
+        if licenseType is not None and licenseType != "all":
+            if UserPrm.isTypeInPrm(get_jwt_identity(), 'Lic_types', licenseType):
+
+                if UserPrm.isProfessionInPrm(get_jwt_identity(), 'Professions', prof):
+                    allowedProfessions = UserPrm.getAllowedProfessions(
+                        get_jwt_identity(), 'Professions')
+                    record = RecordSchema.mainDownload(licenseType, state, prof, allowedProfessions, county, city, zipcode, license,
+                                                       phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
+            else:
+                return {'message': 'You are not authorized to access this data'}, 401
+        else:
+            return {'message': 'You are not authorized to access this dataaa'}, 404
+
+        if record:
+            return record
+        return {'message': 'record not found'}, 404
+
+
 class Records_by_main_filter(Resource):
     @jwt_required
     def get(self):
