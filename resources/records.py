@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, send_file
 from flask_restful import Resource
 from flask_jwt_extended import (
     jwt_required,
@@ -113,17 +113,17 @@ class getProfessions(Resource):
             userProfessions = eval(userProfessions)
 
             userProfessionSearch = userProfessions["professions"]
-            print("PROFESSIONS ALLOWED: ", userProfessionSearch)
+            # print("PROFESSIONS ALLOWED: ", userProfessionSearch)
             if userProfessionSearch == "":
                 userProfessionSearch = None
         except:
             userProfessionSearch = None
 
         if state is None and licenseType == 'all':
-            print("LICENSE: ", licenseType)
+            # print("LICENSE: ", licenseType)
             record = RecordSchema.getProfessions()
         else:
-            print("LICENSE: ", licenseType)
+            # print("LICENSE: ", licenseType)
             record = RecordSchema.getProfesionByLictypeState(
                 licenseType=licenseType, state=state, professions=userProfessionSearch)
 
@@ -180,6 +180,7 @@ class GetRecCounts_CPN(Resource):
 class dnldRecords(Resource):
     @jwt_required
     def get(self):
+        print("Start")
         licenseType = request.args.get('license_type', None)
         state = request.args.get('state', None)
         state = None if state == 'all' else state
@@ -199,14 +200,13 @@ class dnldRecords(Resource):
 
         allowedProfessions = None
         record = None
-
 # check if License type requested is allowed for current user
         if licenseType is not None and licenseType != "all":
             if UserPrm.isTypeInPrm(get_jwt_identity(), 'Lic_types', licenseType):
-
                 if UserPrm.isProfessionInPrm(get_jwt_identity(), 'Professions', prof):
                     allowedProfessions = UserPrm.getAllowedProfessions(
                         get_jwt_identity(), 'Professions')
+                    print("START PROCESSING!!!!!")
                     record = RecordSchema.mainDownload(licenseType, state, prof, allowedProfessions, county, city, zipcode, license,
                                                        phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
             else:
@@ -215,7 +215,8 @@ class dnldRecords(Resource):
             return {'message': 'You are not authorized to access this dataaa'}, 404
 
         if record:
-            return record
+            path = "exports/{}.csv".format(record)
+            return send_file(path, as_attachment=True)
         return {'message': 'record not found'}, 404
 
 
@@ -280,18 +281,18 @@ class GetRecCounts_Main_filter(Resource):
         srch_type_comp = request.args.get('srch_type_comp', None)
         lic_owner = request.args.get('lic_owner', None)
         srch_type_licO = request.args.get('srch_type_licO', None)
-        print("SEARCH PRM", state)
+        # print("SEARCH PRM", state)
 
         allowedProfessions = None
         record = None
 
 # check if License type requested is allowed for current user
         if licenseType is not None and licenseType != "all":
-            print("0---------------------------------")
+            # print("0---------------------------------")
             if UserPrm.isTypeInPrm(get_jwt_identity(), 'Lic_types', licenseType):
-                print("1---------------------------------")
+                # print("1---------------------------------")
                 if UserPrm.isProfessionInPrm(get_jwt_identity(), 'Professions', prof):
-                    print("2---------------------------------")
+                    # print("2---------------------------------")
                     allowedProfessions = UserPrm.getAllowedProfessions(
                         get_jwt_identity(), 'Professions')
                     record = RecordSchema.getCounts_main_filter(licenseType, state, prof, allowedProfessions, county, city, zipcode, license,

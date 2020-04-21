@@ -147,7 +147,8 @@ class UserTimePeriod(db.Model):
     def getTimePeriod(cls, userId):
         record = cls.query.filter_by(UserID=userId).first()
         if record:
-            return (record.ExpiratioinDate - record.CreatedDate).days
+            # return (record.ExpiratioinDate - record.CreatedDate).days
+            return (record.ExpiratioinDate - datetime.now()).days
 
     @classmethod
     def getTimePeriodFull(cls, userId):
