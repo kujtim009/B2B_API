@@ -294,14 +294,26 @@ class UserPrm(db.Model):
                             return False
         return True
 
+    # @classmethod
+    # def getAllowedProfessions(cls, userId, prmName):
+    #     record = cls.query.filter_by(uid=userId, prm_name=prmName).first()
+
+    #     if record:
+    #         listOfAllowedProfessions = eval(record.prm_value)
+    #         if "professions" in listOfAllowedProfessions:
+    #             if listOfAllowedProfessions["professions"] != "":
+
+    #                 return listOfAllowedProfessions["professions"]
+    #         return None
+
     @classmethod
     def getAllowedProfessions(cls, userId, prmName):
         record = cls.query.filter_by(uid=userId, prm_name=prmName).first()
 
         if record:
             listOfAllowedProfessions = eval(record.prm_value)
-            if "professions" in listOfAllowedProfessions:
-                if listOfAllowedProfessions["professions"] != "":
+            if prmName.lower() in listOfAllowedProfessions:
+                if listOfAllowedProfessions[prmName.lower()] != "":
 
-                    return listOfAllowedProfessions["professions"]
+                    return listOfAllowedProfessions[prmName.lower()]
             return None

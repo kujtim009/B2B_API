@@ -33,6 +33,7 @@ from resources.records import (
     Record_by_company_name,
     getCurUserFields,
     getProfessions,
+    getProfessionsBuckets,
     Record_by_license_owner,
     GetAllFieldNames,
     GetRecCounts_LSP,
@@ -150,6 +151,7 @@ api.add_resource(Record_by_license_and_state_prof, '/lic_state')
 api.add_resource(Record_by_company_name, '/company_name/<string:company>')
 api.add_resource(Record_by_license_owner, '/license_owner/<string:licOwner>')
 api.add_resource(getProfessions, '/professions')
+api.add_resource(getProfessionsBuckets, '/professions_buckets')
 api.add_resource(GetRecCounts_LSP, '/get_counts_lsp')
 api.add_resource(GetRecCounts_LON, '/get_counts_LON/<string:licOwner>')
 api.add_resource(GetRecCounts_CPN, '/get_counts_CPN/<string:company>')

@@ -134,6 +134,40 @@ class getProfessions(Resource):
         return {'message': 'record not found'}, 404
 
 
+class getProfessionsBuckets(Resource):
+    @jwt_required
+    def get(self):
+        state = request.args.get('state', None)
+        licenseType = request.args.get('license_type', 'all')
+
+        userId = get_jwt_identity()
+        try:
+            userProfessionsBuckets = UserPrm.getUserParameter(
+                userId, 'ProfessionBuckets').prm_value
+            userProfessionsBuckets = eval(userProfessionsBuckets)
+
+            userProfessionBucketSearch = userProfessionsBuckets["ProfessionBuckets"]
+            # print("PROFESSIONS ALLOWED: ", userProfessionSearch)
+            if userProfessionBucketSearch == "":
+                userProfessionBucketSearch = None
+        except:
+            userProfessionBucketSearch = None
+
+        if state is None and licenseType == 'all':
+            # print("LICENSE: ", licenseType)
+            record = RecordSchema.getProfessions()
+        else:
+            # print("LICENSE: ", licenseType)
+            record = RecordSchema.getProfesionBucketsByLictypeState(
+                licenseType=licenseType, state=state, professionsBucket=userProfessionBucketSearch)
+
+        if record:
+            test = {key: value for (key, value) in record}
+
+            return test
+        return {'message': 'record not found'}, 404
+
+
 class GetAllFieldNames(Resource):
     @jwt_required
     def get(self):
@@ -227,6 +261,11 @@ class Records_by_main_filter(Resource):
         state = request.args.get('state', None)
         state = None if state == 'all' else state
         prof = request.args.get('profession', None)
+
+        profBucket = request.args.get('profession_bucket', None)
+        profSubBucket = request.args.get('profession_sub_bucket', None)
+        profSubBucket2 = request.args.get('profession_sub_bucket2', None)
+
         county = request.args.get('county', None)
         city = request.args.get('city', None)
         zipcode = request.args.get('zipcode', None)
@@ -241,6 +280,7 @@ class Records_by_main_filter(Resource):
         srch_type_licO = request.args.get('srch_type_licO', None)
 
         allowedProfessions = None
+        allowedProfessionsBuckets = None
         record = None
 
 # check if License type requested is allowed for current user
@@ -250,8 +290,18 @@ class Records_by_main_filter(Resource):
                 if UserPrm.isProfessionInPrm(get_jwt_identity(), 'Professions', prof):
                     allowedProfessions = UserPrm.getAllowedProfessions(
                         get_jwt_identity(), 'Professions')
-                    record = RecordSchema.main_filter(licenseType, state, prof, allowedProfessions, county, city, zipcode, license,
+                    record = RecordSchema.main_filter(licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, profSubBucket, profSubBucket2, county, city, zipcode, license,
                                                       phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
+                    print("FIRST: ", licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, county, city, zipcode, license,
+                          phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
+
+                elif UserPrm.isProfessionInPrm(get_jwt_identity(), 'ProfessionBuckets', profBucket):
+                    allowedProfessionsBuckets = UserPrm.getAllowedProfessions(
+                        get_jwt_identity(), 'ProfessionBuckets')
+                    record = RecordSchema.main_filter(licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, profSubBucket, profSubBucket2, county, city, zipcode, license,
+                                                      phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
+                    print("SECOND: ", licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, county, city, zipcode, license,
+                          phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
             else:
                 return {'message': 'You are not authorized to access this data'}, 401
         else:

@@ -86,9 +86,10 @@ class RecordSchema(ma.ModelSchema):
         if license is None and state is None and prof is None:
             return jsonify({'Records': 'Search input is missing!'})
         else:
-            # print("EXECUTED")
+            print("EXECUTED", parameters)
+
             result = db.engine.execute(
-                'Fgx_api_main_filter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
+                'Fgx_api_main_filter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
 
         fields = cls.get_user_fields()
         record_schema = RecordSchema(many=True, only=cls.get_user_fields())
@@ -98,7 +99,7 @@ class RecordSchema(ma.ModelSchema):
     @classmethod
     def getCounts_main_filter(cls, *fields):
         result = db.engine.execute(
-            'Fgx_api_main_counter ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
+            'Fgx_api_main_counter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
         for rowe in result:
             return rowe[0]
         return result
@@ -148,6 +149,15 @@ class RecordSchema(ma.ModelSchema):
         #                            'all' else licenseType, state, professions])
         result = db.engine.execute('Fgx_api_getProfesionByState ?, ?, ?', [
                                    None if licenseType == 'all' else licenseType, state, professions])
+        return result
+
+    @classmethod
+    def getProfesionBucketsByLictypeState(cls, state=None, licenseType='all', professionsBucket=None):
+        # print("GET PROFESSION: ", [None if licenseType ==
+        #                            'all' else licenseType, state, professionsBucket])
+        print("ProfessionBuckets", professionsBucket)
+        result = db.engine.execute('Fgx_api_getProfesionBucketsByState ?, ?, ?', [
+                                   None if licenseType == 'all' else licenseType, state, professionsBucket])
         return result
 
     @classmethod
