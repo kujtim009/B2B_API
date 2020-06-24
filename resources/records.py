@@ -8,6 +8,7 @@ from models.records import RecordSchema
 from models.user import Userinfo, UserPrm
 from models.layout import LayoutModel
 import json
+import os
 
 
 class Record_by_license(Resource):
@@ -286,7 +287,9 @@ class dnldRecords(Resource):
             return {'message': 'You are not authorized to access this dataaa'}, 404
 
         if record:
-            path = "exports/{}.csv".format(record)
+            print("SCRIPT PATH: ", os.path.dirname(os.path.abspath(__file__)))
+            path = os.path.dirname(os.path.abspath(
+                __file__)) + "/../exports/{}.csv".format(record)
             return send_file(path, as_attachment=True)
         return {'message': 'record not found'}, 404
 
