@@ -56,8 +56,12 @@ class RecordSchema(ma.ModelSchema):
     @classmethod
     def createDnldFile(cls, data, userID):
         df = pd.DataFrame(data[0])
-        df.to_csv(os.path.dirname(os.path.abspath(__file__)) +
-                  "/../exports/{}.csv".format(userID))
+        print("SCRIPT PATH2222: ", os.path.dirname(
+            os.path.abspath(__file__), '..'))
+
+        df.to_csv(os.path.dirname(
+            os.path.abspath(__file__), '..') +
+            "/exports/{}.csv".format(userID))
 
     @classmethod
     def mainDownload(cls, *fields):
@@ -68,7 +72,7 @@ class RecordSchema(ma.ModelSchema):
             return jsonify({'Records': 'Search input is missing!'})
         else:
             print("EXECUTED!!!!!!!!")
-            print("SCRIPT PATH: ", os.path.dirname(os.path.abspath(__file__)))
+
             result = db.engine.execute(
                 'Fgx_api_main_download ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
 
