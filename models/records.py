@@ -57,12 +57,10 @@ class RecordSchema(ma.ModelSchema):
     def createDnldFile(cls, data, userID):
         df = pd.DataFrame(data[0])
         print("SCRIPT PATH2222: ", os.path.abspath(os.curdir))
-        print("SCRIPT PATH33333: ", os.path.join(
-            os.path.dirname(__file__), '..'))
+        print("SCRIPT PATH33333: ", os.path.dirname(os.path.dirname(__file__)))
 
-        df.to_csv(os.path.join(
-            os.path.dirname(__file__), '../') +
-            "exports/{}.csv".format(userID))
+        df.to_csv(os.path.dirname(os.path.dirname(__file__)) +
+                  "/exports/{}.csv".format(userID))
 
     @classmethod
     def mainDownload(cls, *fields):
