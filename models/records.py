@@ -65,16 +65,16 @@ class RecordSchema(ma.ModelSchema):
         if license is None and state is None and prof is None:
             return jsonify({'Records': 'Search input is missing!'})
         else:
-            # print("EXECUTED")
+            print("EXECUTED!!!!!!!!")
             result = db.engine.execute(
-                'Fgx_api_main_download ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
+                'Fgx_api_main_download ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
 
         fields = cls.get_user_fields()
         record_schema = RecordSchema(many=True, only=cls.get_user_fields())
         output = record_schema.dump(result)
 
         userID = get_jwt_identity()
-        # print("MAIN DOWNLOAD:", userID)
+        print("MAIN DOWNLOAD:", result)
         cls.createDnldFile(output, userID)
         return userID
 
@@ -99,7 +99,7 @@ class RecordSchema(ma.ModelSchema):
     @classmethod
     def getCounts_main_filter(cls, *fields):
         result = db.engine.execute(
-            'Fgx_api_main_counter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
+            'Fgx_api_main_counter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?', fields)
         for rowe in result:
             return rowe[0]
         return result
@@ -158,6 +158,15 @@ class RecordSchema(ma.ModelSchema):
         print("ProfessionBuckets", professionsBucket)
         result = db.engine.execute('Fgx_api_getProfesionBucketsByState ?, ?, ?', [
                                    None if licenseType == 'all' else licenseType, state, professionsBucket])
+        return result
+
+    @classmethod
+    def getProfesionSubBucketsByBucketState(cls, state=None, professionsBucket=None):
+        # print("GET PROFESSION: ", [None if licenseType ==
+        #                            'all' else licenseType, state, professionsBucket])
+        print("ProfessionBuckets", professionsBucket)
+        result = db.engine.execute('Fgx_api_getProfesionSubBucketsByState ?, ?', [
+            state, professionsBucket])
         return result
 
     @classmethod
