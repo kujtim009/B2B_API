@@ -4,6 +4,7 @@ from flask_jwt_extended import get_jwt_identity
 from models.user import Userinfo
 import pandas as pd
 import json
+import os
 
 
 class ItemModel(db.Model):
@@ -66,6 +67,7 @@ class RecordSchema(ma.ModelSchema):
             return jsonify({'Records': 'Search input is missing!'})
         else:
             print("EXECUTED!!!!!!!!")
+            print("SCRIPT PATH: ", os.path.dirname(os.path.abspath(__file__)))
             result = db.engine.execute(
                 'Fgx_api_main_download ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
 

@@ -285,7 +285,7 @@ class dnldRecords(Resource):
                 return {'message': 'You are not authorized to access this data'}, 401
         else:
             return {'message': 'You are not authorized to access this dataaa'}, 404
-
+        print("SCRIPT PATH: ", os.path.dirname(os.path.abspath(__file__)))
         if record:
             print("SCRIPT PATH: ", os.path.dirname(os.path.abspath(__file__)))
             path = os.path.dirname(os.path.abspath(
