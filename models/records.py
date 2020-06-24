@@ -59,7 +59,7 @@ class RecordSchema(ma.ModelSchema):
         print("SCRIPT PATH2222: ", os.path.abspath(os.curdir))
 
         df.to_csv(os.path.abspath(os.curdir) +
-                  "/exports/{}.csv".format(userID))
+                  "exports/{}.csv".format(userID))
 
     @classmethod
     def mainDownload(cls, *fields):

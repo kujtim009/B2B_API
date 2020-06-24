@@ -289,7 +289,7 @@ class dnldRecords(Resource):
         if record:
             print("SCRIPT PATH: ", os.path.dirname(os.path.abspath(__file__)))
             path = os.path.abspath(os.curdir) + \
-                "/exports/{}.csv".format(record)
+                "exports/{}.csv".format(record)
             return send_file(path, as_attachment=True)
         return {'message': 'record not found'}, 404
 
