@@ -4,45 +4,51 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS, cross_origin
 from blacklist import BLACKLIST
 import urllib
-from resources.user import (
-    UserRegister,
-    User,
-    UsersList,
-    UserLogin,
-    CheckAuth,
-    TokenRefresh,
-    UserLogout,
-    Add_allowed_fields,
-    TestAPI,
-    removeUserFields,
-    removeAllUserFields,
-    AddUserTimePeriod,
-    GetUserTimePeriod,
-    AddUserCoins,
-    GetUserCoins,
-    GetUserPrmByName,
-    AddUserPrm)
-from models.user import UserModel
+import routes.mlfRoutes as mlfRoutes
+import routes.userRoutes as userRoutes
 import models.parameters as prm
-from resources.records import (
-    Record_by_license,
-    RecordList,
-    Record_by_state,
-    Record_by_Individual_name,
-    Record_by_license_and_state_prof,
-    Record_by_company_name,
-    getCurUserFields,
-    getProfessions,
-    getProfessionsBuckets,
-    getProfessionsSubBuckets,
-    Record_by_license_owner,
-    GetAllFieldNames,
-    GetRecCounts_LSP,
-    GetRecCounts_LON,
-    GetRecCounts_CPN,
-    Records_by_main_filter,
-    GetRecCounts_Main_filter,
-    dnldRecords)
+from resources.user import TestAPI
+from models.user import UserModel
+
+# from resources.user import (
+#     UserRegister,
+#     User,
+#     UsersList,
+#     UserLogin,
+#     CheckAuth,
+#     TokenRefresh,
+#     UserLogout,
+#     Add_allowed_fields,
+#     TestAPI,
+#     removeUserFields,
+#     removeAllUserFields,
+#     AddUserTimePeriod,
+#     GetUserTimePeriod,
+#     AddUserCoins,
+#     GetUserCoins,
+#     GetUserPrmByName,
+#     AddUserPrm)
+
+
+# from resources.records import (
+#     Record_by_license,
+#     RecordList,
+#     Record_by_state,
+#     Record_by_Individual_name,
+#     Record_by_license_and_state_prof,
+#     Record_by_company_name,
+#     getCurUserFields,
+#     getProfessions,
+#     getProfessionsBuckets,
+#     getProfessionsSubBuckets,
+#     Record_by_license_owner,
+#     GetAllFieldNames,
+#     GetRecCounts_LSP,
+#     GetRecCounts_LON,
+#     GetRecCounts_CPN,
+#     Records_by_main_filter,
+#     GetRecCounts_Main_filter,
+#     dnldRecords)
 
 
 app = Flask(__name__)
@@ -54,7 +60,7 @@ quotedLocalPc = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=208.118.231.
                                         prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect={}".format(
-    quotedDigitalOcean)
+    quotedLocalPc)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_SECRET_KEY'] = prm.jwt_secret_key_stored
@@ -120,43 +126,42 @@ def token_not_fresh_callback():
 
 
 api.add_resource(TestAPI, '/test')
-api.add_resource(Record_by_license, '/licence/<int:license>')
-api.add_resource(Record_by_state, '/state/<string:state>')
-api.add_resource(Record_by_Individual_name, '/full_name')
-api.add_resource(RecordList, '/all_records')
-api.add_resource(UserRegister, '/register')
-api.add_resource(User, '/user/<int:user_id>')
-api.add_resource(UsersList, '/users')
-api.add_resource(UserLogin, '/auth')
-api.add_resource(CheckAuth, '/checkauth/<int:user_id>')
-api.add_resource(TokenRefresh, '/refresh')
-api.add_resource(UserLogout, '/logout')
-api.add_resource(getCurUserFields, '/usersField')
-api.add_resource(Add_allowed_fields, '/addUserFields')
-api.add_resource(removeUserFields, '/removeusrfields')
-api.add_resource(removeAllUserFields, '/removeallfields/<int:user_id>')
-api.add_resource(GetAllFieldNames, '/all_fields')
-api.add_resource(AddUserCoins, '/addUserCoins')
-api.add_resource(GetUserCoins, '/getcoins')
-api.add_resource(AddUserTimePeriod, '/addusertimeperiod')
-api.add_resource(GetUserTimePeriod, '/getusertimeperiod')
+userRoutes.insertUserRoutes(api)
+mlfRoutes.insertMlfRoutes(api)
 
-api.add_resource(AddUserPrm, '/adduserprm')
-api.add_resource(GetUserPrmByName, '/getuserprm')
 
-api.add_resource(Records_by_main_filter, '/mlf_filter')
-api.add_resource(GetRecCounts_Main_filter, '/mlf_count')
-api.add_resource(dnldRecords, '/mlf_dnld')
+# api.add_resource(UserRegister, '/register')
+# api.add_resource(User, '/user/<int:user_id>')
+# api.add_resource(UsersList, '/users')
+# api.add_resource(UserLogin, '/auth')
+# api.add_resource(CheckAuth, '/checkauth/<int:user_id>')
+# api.add_resource(TokenRefresh, '/refresh')
+# api.add_resource(UserLogout, '/logout')
+# api.add_resource(getCurUserFields, '/usersField')
+# api.add_resource(Add_allowed_fields, '/addUserFields')
+# api.add_resource(removeUserFields, '/removeusrfields')
+# api.add_resource(removeAllUserFields, '/removeallfields/<int:user_id>')
+# api.add_resource(GetAllFieldNames, '/all_fields')
+# api.add_resource(AddUserCoins, '/addUserCoins')
+# api.add_resource(GetUserCoins, '/getcoins')
+# api.add_resource(AddUserTimePeriod, '/addusertimeperiod')
+# api.add_resource(GetUserTimePeriod, '/getusertimeperiod')
+# api.add_resource(AddUserPrm, '/adduserprm')
+# api.add_resource(GetUserPrmByName, '/getuserprm')
 
-api.add_resource(Record_by_license_and_state_prof, '/lic_state')
-api.add_resource(Record_by_company_name, '/company_name/<string:company>')
-api.add_resource(Record_by_license_owner, '/license_owner/<string:licOwner>')
-api.add_resource(getProfessions, '/professions')
-api.add_resource(getProfessionsBuckets, '/professions_buckets')
-api.add_resource(getProfessionsSubBuckets, '/professions_subbuckets')
-api.add_resource(GetRecCounts_LSP, '/get_counts_lsp')
-api.add_resource(GetRecCounts_LON, '/get_counts_LON/<string:licOwner>')
-api.add_resource(GetRecCounts_CPN, '/get_counts_CPN/<string:company>')
+# api.add_resource(Records_by_main_filter, '/mlf_filter')
+# api.add_resource(GetRecCounts_Main_filter, '/mlf_count')
+# api.add_resource(dnldRecords, '/mlf_dnld')
+
+# api.add_resource(Record_by_license_and_state_prof, '/lic_state')
+# api.add_resource(Record_by_company_name, '/company_name/<string:company>')
+# api.add_resource(Record_by_license_owner, '/license_owner/<string:licOwner>')
+# api.add_resource(getProfessions, '/professions')
+# api.add_resource(getProfessionsBuckets, '/professions_buckets')
+# api.add_resource(getProfessionsSubBuckets, '/professions_subbuckets')
+# api.add_resource(GetRecCounts_LSP, '/get_counts_lsp')
+# api.add_resource(GetRecCounts_LON, '/get_counts_LON/<string:licOwner>')
+# api.add_resource(GetRecCounts_CPN, '/get_counts_CPN/<string:company>')
 
 if __name__ == '__main__':
     from db import db
