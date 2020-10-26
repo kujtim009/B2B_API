@@ -37,7 +37,7 @@ class CbdRecordSchema(ma.ModelSchema):
         df = pd.DataFrame(data[0])
 
         df.to_csv(os.path.dirname(os.path.dirname(__file__)) +
-                  "/exports/{}.csv".format(userID))
+                  "/exports/CBD/{}.csv".format(userID))
 
     @classmethod
     def mainDownload(cls, *fields):
@@ -50,10 +50,12 @@ class CbdRecordSchema(ma.ModelSchema):
             print("EXECUTED!!!!!!!!")
 
             result = db.engine.execute(
-                'Fgx_api_main_download ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
+                'Fgx_api_cbd_main_downloader ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
 
         fields = cls.get_user_fields()
-        record_schema = RecordSchema(many=True, only=cls.get_user_fields())
+        print("FIELDS:", fields)
+        record_schema = CbdRecordSchema(
+            many=True, only=cls.get_user_fields(project='CBD'))
         output = record_schema.dump(result)
 
         userID = get_jwt_identity()
@@ -80,7 +82,7 @@ class CbdRecordSchema(ma.ModelSchema):
     @classmethod
     def getCounts_main_filter(cls, *fields):
         result = db.engine.execute(
-            'Fgx_api_cbd_main_counter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
+            'Fgx_api_cbd_main_counter ?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
         for rowe in result:
             return rowe[0]
         return result

@@ -223,6 +223,36 @@ class Cbd_Records_by_main_filter(Resource):
         return {'message': 'record not found'}, 404
 
 
+class CbdDnldRecords(Resource):
+    @jwt_required
+    def get(self):
+        state = request.args.get('state', None)
+        state = None if state == 'all' else state
+        pBuyer = request.args.get('p_buyer', None)
+        pMBuyer = request.args.get('p_multi_buyer', None)
+
+        city = request.args.get('city', None)
+        zipcode = request.args.get('zipcode', None)
+
+        phone = request.args.get('phone', None)
+        email = request.args.get('email', None)
+
+        dobFrom = request.args.get('dob_from', None)
+        dobTo = request.args.get('dob_to', None)
+
+        record = None
+
+        if state is not None:
+            record = CbdRecordSchema.mainDownload(
+                state, pBuyer, pMBuyer, city, zipcode, phone, email, dobFrom, dobTo)
+
+        if record:
+            path = os.path.dirname(os.path.dirname(
+                __file__)) + "/exports/CBD/{}.csv".format(record)
+            return send_file(path, as_attachment=True)
+        return {'message': 'record not found'}, 404
+
+
 class Cbd_GetRecCounts_Main_filter(Resource):
     @jwt_required
     def get(self):
@@ -240,11 +270,7 @@ class Cbd_GetRecCounts_Main_filter(Resource):
         dobFrom = request.args.get('dob_from', None)
         dobTo = request.args.get('dob_to', None)
 
-        allowedProfessions = None
-        allowedProfessionsBuckets = None
         record = None
-
-# check if License type requested is allowed for current user
 
         if state is not None:
             record = CbdRecordSchema.getCounts_main_filter(
