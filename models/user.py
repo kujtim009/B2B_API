@@ -77,8 +77,8 @@ class Userinfo(db.Model):
         }
 
     @classmethod
-    def get_user_fields(cls, userid):
-        return cls.query.filter_by(User_id=userid, View_state=1).all()
+    def get_user_fields(cls, userid, project='MLF'):
+        return cls.query.filter_by(User_id=userid, View_state=1, File_name=project).all()
 
     @classmethod
     def get_all_user_fields(cls, userid):

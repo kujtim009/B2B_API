@@ -6,6 +6,7 @@ from blacklist import BLACKLIST
 import urllib
 import routes.mlfRoutes as mlfRoutes
 import routes.userRoutes as userRoutes
+import routes.cbdRoutes as cbdRoutes
 import models.parameters as prm
 from resources.user import TestAPI
 from models.user import UserModel
@@ -128,7 +129,7 @@ def token_not_fresh_callback():
 api.add_resource(TestAPI, '/test')
 userRoutes.insertUserRoutes(api)
 mlfRoutes.insertMlfRoutes(api)
-
+cbdRoutes.insertCbdRoutes(api)
 
 # api.add_resource(UserRegister, '/register')
 # api.add_resource(User, '/user/<int:user_id>')
