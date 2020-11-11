@@ -52,8 +52,6 @@ class CbdRecordSchema(ma.ModelSchema):
             result = db.engine.execute(
                 'Fgx_api_cbd_main_downloader ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
 
-        fields = cls.get_user_fields()
-        print("FIELDS:", fields)
         record_schema = CbdRecordSchema(
             many=True, only=cls.get_user_fields(project='CBD'))
         output = record_schema.dump(result)
@@ -62,6 +60,47 @@ class CbdRecordSchema(ma.ModelSchema):
         print("MAIN DOWNLOAD:", result)
         cls.createDnldFile(output, userID)
         return userID
+
+    # @classmethod
+    # def createDnldFile(cls, data, userID):
+    #     # df = pd.DataFrame(data[0])
+
+    #     df.to_csv(os.path.dirname(os.path.dirname(__file__)) +
+    #               "/exports/CBD/{}.csv".format(userID))
+
+    # @classmethod
+    # def mainDownload(cls, *fields):
+    #     # print("SEARCH FIELDS: ", fields)
+    #     parameters = [x for x in fields]
+    #     # parameters.insert(0, cls.record_output)
+    #     if license is None and state is None and prof is None:
+    #         return jsonify({'Records': 'Search input is missing!'})
+    #     else:
+    #         print("EXECUTED!!!!!!!!")
+
+    #         result = db.engine.execute(
+    #             'Fgx_api_cbd_main_downloader ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
+
+    #     record_schema = CbdRecordSchema(
+    #         many=True, only=cls.get_user_fields(project='CBD'))
+    #     output = record_schema.dump(result)
+
+    #     chunksize = 100000
+    #     header = True
+    #     userID = get_jwt_identity()
+    #     sql = ('Fgx_api_cbd_main_downloader ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
+    #     print("columns:{} Type: {}".format(cls.get_user_fields(
+    #         project='CBD'), type(cls.get_user_fields(project='CBD'))))
+    #     for chunk in pd.read_sql_query(sql, db.engine, chunksize=chunksize):
+    #         print("CHUNKINGGGGGGGGGGG")
+    #         chunk.to_csv(os.path.dirname(os.path.dirname(__file__)) +
+    #                      "/exports/CBD/{}.csv".format(userID), 'a', header=header, mode='a')
+    #         header = False
+
+    #     # userID = get_jwt_identity()
+    #     # print("MAIN DOWNLOAD:", result)
+    #     # cls.createDnldFile(output, userID)
+    #     return userID
 
     @classmethod
     def main_filter(cls, *fields):

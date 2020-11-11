@@ -234,7 +234,7 @@ class Cbd_Records_by_main_filter(Resource):
 
         if record:
             return record
-        return {'message': 'record not found'}, 404
+        return {'message': 'record not found'}
 
 
 class CbdDnldRecords(Resource):
@@ -291,4 +291,4 @@ class Cbd_GetRecCounts_Main_filter(Resource):
                 state, pBuyer, pMBuyer, city, zipcode, phone, email, dobFrom, dobTo)
         if record:
             return {'count': record}
-        return {'message': 'record not found'}, 404
+        return {'count': 0}

@@ -1,3 +1,4 @@
+from datetime import timedelta
 from flask_restful import Resource, reqparse, request
 from passlib.hash import sha256_crypt
 from models.user import UserModel, UserTimePeriod, Userinfo, UserCoins, UserPrm
@@ -118,8 +119,9 @@ class UserLogin(Resource):
             if int(user.access_level) >= 2 and UserTimePeriod.timePeriodExists(user.ID):
                 if UserTimePeriod.getTimePeriod(user.ID) <= 0:
                     return {'message': 'Your subscription has expired, contact us for more details!'}, 401
-
-            access_token = create_access_token(identity=user.ID, fresh=True)
+            expires = timedelta(minutes=60)
+            access_token = create_access_token(
+                identity=user.ID, fresh=True, expires_delta=expires)
             refresh_token = create_refresh_token(user.ID)
 
             return {
