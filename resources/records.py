@@ -89,11 +89,12 @@ class getCurUserFields(Resource):
     @jwt_required
     def get(self):
         prmUserID = request.args.get('uid', None)
+        project = request.args.get('project', None)
         if prmUserID is None:
             userID = get_jwt_identity()
-            record = Userinfo.get_all_user_fields(userID)
+            record = Userinfo.get_all_user_fields(userID, project)
         else:
-            record = Userinfo.get_all_user_fields(prmUserID)
+            record = Userinfo.get_all_user_fields(prmUserID, project)
 
         if record:
             # return {'User_fields': list(map(lambda x: x.json(), record))}
@@ -342,7 +343,14 @@ class Records_by_main_filter(Resource):
                             get_jwt_identity(), 'ProfessionBuckets')
                         record = RecordSchema.main_filter(licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, profSubBucket, profSubBucket2, county, city, zipcode, license,
                                                           phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
-
+                else:
+                    if UserPrm.isProfessionInPrm(get_jwt_identity(), 'ProfessionBuckets', profBucket):
+                        allowedProfessionsBuckets = UserPrm.getAllowedProfessions(
+                            get_jwt_identity(), 'ProfessionBuckets')
+                        allowedProfessions = UserPrm.getAllowedProfessions(
+                            get_jwt_identity(), 'Professions')
+                        record = RecordSchema.main_filter(licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, profSubBucket, profSubBucket2, county, city, zipcode, license,
+                                                          phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
             else:
                 return {'message': 'You are not authorized to access this data'}, 401
         else:
@@ -400,6 +408,14 @@ class GetRecCounts_Main_filter(Resource):
                     if UserPrm.isProfessionInPrm(get_jwt_identity(), 'ProfessionBuckets', profBucket):
                         allowedProfessionsBuckets = UserPrm.getAllowedProfessions(
                             get_jwt_identity(), 'ProfessionBuckets')
+                        record = RecordSchema.getCounts_main_filter(licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, profSubBucket, profSubBucket2, county, city, zipcode, license,
+                                                                    phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
+                else:
+                    if UserPrm.isProfessionInPrm(get_jwt_identity(), 'ProfessionBuckets', profBucket):
+                        allowedProfessionsBuckets = UserPrm.getAllowedProfessions(
+                            get_jwt_identity(), 'ProfessionBuckets')
+                        allowedProfessions = UserPrm.getAllowedProfessions(
+                            get_jwt_identity(), 'Professions')
                         record = RecordSchema.getCounts_main_filter(licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, profSubBucket, profSubBucket2, county, city, zipcode, license,
                                                                     phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
         if record:

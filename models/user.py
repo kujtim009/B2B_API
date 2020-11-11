@@ -81,8 +81,11 @@ class Userinfo(db.Model):
         return cls.query.filter_by(User_id=userid, View_state=1, File_name=project).all()
 
     @classmethod
-    def get_all_user_fields(cls, userid):
-        return cls.query.filter_by(User_id=userid).all()
+    def get_all_user_fields(cls, userid, project):
+        if project is None:
+            return cls.query.filter_by(User_id=userid).all()
+        else:
+            return cls.query.filter_by(User_id=userid, File_name=project).all()
 
     @classmethod
     def fieldExist_in_user(cls, userID, fieldname):

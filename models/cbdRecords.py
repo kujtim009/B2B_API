@@ -8,7 +8,7 @@ import os
 
 
 class ItemModel(db.Model):
-    __tablename__ = 'CBD_Sample'
+    __tablename__ = 'CBD'
     Record_id = db.Column(db.Integer, primary_key=True)
 
 
@@ -85,6 +85,12 @@ class CbdRecordSchema(ma.ModelSchema):
             'Fgx_api_cbd_main_counter ?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
         for rowe in result:
             return rowe[0]
+        return result
+
+    @classmethod
+    def cbdGetCityByState(cls, state):
+        result = db.engine.execute(
+            'Fgx_api_cbd_get_cities_from_state ?', [state])
         return result
 
     @classmethod

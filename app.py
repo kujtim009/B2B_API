@@ -11,46 +11,6 @@ import models.parameters as prm
 from resources.user import TestAPI
 from models.user import UserModel
 
-# from resources.user import (
-#     UserRegister,
-#     User,
-#     UsersList,
-#     UserLogin,
-#     CheckAuth,
-#     TokenRefresh,
-#     UserLogout,
-#     Add_allowed_fields,
-#     TestAPI,
-#     removeUserFields,
-#     removeAllUserFields,
-#     AddUserTimePeriod,
-#     GetUserTimePeriod,
-#     AddUserCoins,
-#     GetUserCoins,
-#     GetUserPrmByName,
-#     AddUserPrm)
-
-
-# from resources.records import (
-#     Record_by_license,
-#     RecordList,
-#     Record_by_state,
-#     Record_by_Individual_name,
-#     Record_by_license_and_state_prof,
-#     Record_by_company_name,
-#     getCurUserFields,
-#     getProfessions,
-#     getProfessionsBuckets,
-#     getProfessionsSubBuckets,
-#     Record_by_license_owner,
-#     GetAllFieldNames,
-#     GetRecCounts_LSP,
-#     GetRecCounts_LON,
-#     GetRecCounts_CPN,
-#     Records_by_main_filter,
-#     GetRecCounts_Main_filter,
-#     dnldRecords)
-
 
 app = Flask(__name__)
 CORS(app)
@@ -131,38 +91,6 @@ userRoutes.insertUserRoutes(api)
 mlfRoutes.insertMlfRoutes(api)
 cbdRoutes.insertCbdRoutes(api)
 
-# api.add_resource(UserRegister, '/register')
-# api.add_resource(User, '/user/<int:user_id>')
-# api.add_resource(UsersList, '/users')
-# api.add_resource(UserLogin, '/auth')
-# api.add_resource(CheckAuth, '/checkauth/<int:user_id>')
-# api.add_resource(TokenRefresh, '/refresh')
-# api.add_resource(UserLogout, '/logout')
-# api.add_resource(getCurUserFields, '/usersField')
-# api.add_resource(Add_allowed_fields, '/addUserFields')
-# api.add_resource(removeUserFields, '/removeusrfields')
-# api.add_resource(removeAllUserFields, '/removeallfields/<int:user_id>')
-# api.add_resource(GetAllFieldNames, '/all_fields')
-# api.add_resource(AddUserCoins, '/addUserCoins')
-# api.add_resource(GetUserCoins, '/getcoins')
-# api.add_resource(AddUserTimePeriod, '/addusertimeperiod')
-# api.add_resource(GetUserTimePeriod, '/getusertimeperiod')
-# api.add_resource(AddUserPrm, '/adduserprm')
-# api.add_resource(GetUserPrmByName, '/getuserprm')
-
-# api.add_resource(Records_by_main_filter, '/mlf_filter')
-# api.add_resource(GetRecCounts_Main_filter, '/mlf_count')
-# api.add_resource(dnldRecords, '/mlf_dnld')
-
-# api.add_resource(Record_by_license_and_state_prof, '/lic_state')
-# api.add_resource(Record_by_company_name, '/company_name/<string:company>')
-# api.add_resource(Record_by_license_owner, '/license_owner/<string:licOwner>')
-# api.add_resource(getProfessions, '/professions')
-# api.add_resource(getProfessionsBuckets, '/professions_buckets')
-# api.add_resource(getProfessionsSubBuckets, '/professions_subbuckets')
-# api.add_resource(GetRecCounts_LSP, '/get_counts_lsp')
-# api.add_resource(GetRecCounts_LON, '/get_counts_LON/<string:licOwner>')
-# api.add_resource(GetRecCounts_CPN, '/get_counts_CPN/<string:company>')
 
 if __name__ == '__main__':
     from db import db

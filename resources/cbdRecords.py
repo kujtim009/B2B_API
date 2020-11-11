@@ -97,6 +97,20 @@ class getProfessionsBuckets(Resource):
         return {'message': 'record not found'}, 404
 
 
+class CbdgetCitiesByState(Resource):
+    @jwt_required
+    def get(self):
+        state = request.args.get('state', None)
+        print(state)
+        record = CbdRecordSchema.cbdGetCityByState(state)
+        # print("Records", list(record))
+        result = list(record)
+        # print({"city": [item[0] for item in result]})
+        if record:
+            return {"cities": [item[0] for item in result]}
+        return {'message': 'record not found'}, 404
+
+
 class getProfessionsSubBuckets(Resource):
     @jwt_required
     def get(self):
