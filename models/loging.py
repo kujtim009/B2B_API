@@ -14,7 +14,7 @@ class Loging(db.Model):
     actionType = db.Column(db.String(20))
     queryPrm = db.Column(db.String(500))
     recordsPulled = db.Column(db.Integer)
-    ipAddress = db.Column(db.String(12))
+    ipAddress = db.Column(db.String(20))
     timeStamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __init__(self, projectName, userId, userName, actionType, queryPrm, recordsPulled, ipAddress, timeStamp=None):
