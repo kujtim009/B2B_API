@@ -15,7 +15,7 @@ sql_password = "Remote009I!"
 # conn_executemany = create_engine(
 #     f"mssql+pyodbc://ITRemoteUser:Remote009I!@{DSN}/{DB}?driver={DRIVER}", fast_executemany=True
 quotedLocalPc = urllib.parse.quote_plus(
-    "DRIVER={SQL Server};SERVER=208.118.231.180,21201;UID=ITRemoteUser;PWD=Remote009I!;DATABASE=InsertTool;Trusted_Connection=no;")
+    "DRIVER={ODBC Driver 17 for SQL Server};SERVER=208.118.231.180,21201;UID=ITRemoteUser;PWD=Remote009I!;DATABASE=InsertTool;Trusted_Connection=no;")
 
 # quoted = quote_plus(conn)
 new_con = 'mssql+pyodbc:///?odbc_connect={}'.format(quotedLocalPc)
