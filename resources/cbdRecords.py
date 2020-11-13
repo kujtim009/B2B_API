@@ -7,10 +7,11 @@ from flask_jwt_extended import (
 # from models.records import RecordSchema
 
 from models.cbdRecords import CbdRecordSchema
-from models.user import Userinfo, UserPrm
+from models.user import Userinfo, UserPrm, UserModel
 from models.layout import LayoutModel
 import json
 import os
+from models.loging import Loging
 
 
 class getCurUserFields(Resource):
@@ -233,6 +234,10 @@ class Cbd_Records_by_main_filter(Resource):
                 state, pBuyer, pMBuyer, city, zipcode, phone, email, dobFrom, dobTo)
 
         if record:
+            user = UserModel.find_by_id(get_jwt_identity())
+            log = Loging(
+                "CBD", get_jwt_identity(), user.username, "Search Query", json.dumps(request.args), None, str(request.remote_addr))
+            log.save()
             return record
         return {'message': 'record not found'}
 
@@ -263,6 +268,10 @@ class CbdDnldRecords(Resource):
         if record:
             path = os.path.dirname(os.path.dirname(
                 __file__)) + "/exports/CBD/{}.csv".format(record)
+            user = UserModel.find_by_id(get_jwt_identity())
+            log = Loging(
+                "CBD", get_jwt_identity(), user.username, "Download Query", json.dumps(request.args), None, str(request.remote_addr))
+            log.save()
             return send_file(path, as_attachment=True)
         return {'message': 'record not found'}, 404
 

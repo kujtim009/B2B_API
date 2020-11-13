@@ -5,10 +5,11 @@ from flask_jwt_extended import (
     fresh_jwt_required,
     get_jwt_identity)
 from models.records import RecordSchema
-from models.user import Userinfo, UserPrm
+from models.user import Userinfo, UserPrm, UserModel
 from models.layout import LayoutModel
 import json
 import os
+from models.loging import Loging
 
 
 class Record_by_license(Resource):
@@ -289,10 +290,13 @@ class dnldRecords(Resource):
         print("SCRIPT PATH: ", os.path.join(
             os.path.dirname(__file__), '../'))
         if record:
-            print("SCRIPT PATH: ", os.path.join(
-                os.path.dirname(__file__), '../'))
+
             path = os.path.dirname(os.path.dirname(
                 __file__)) + "/exports/{}.csv".format(record)
+            user = UserModel.find_by_id(get_jwt_identity())
+            log = Loging(
+                "MLF", get_jwt_identity(), user.username, "Download Query", json.dumps(request.args), None, str(request.remote_addr))
+            log.save()
             return send_file(path, as_attachment=True)
         return {'message': 'record not found'}, 404
 
@@ -351,14 +355,19 @@ class Records_by_main_filter(Resource):
                             get_jwt_identity(), 'Professions')
                         record = RecordSchema.main_filter(licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, profSubBucket, profSubBucket2, county, city, zipcode, license,
                                                           phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
+
             else:
                 return {'message': 'You are not authorized to access this data'}, 401
         else:
             return {'message': 'You are not authorized to access this dataaa'}, 404
 
         if record:
+            user = UserModel.find_by_id(get_jwt_identity())
+            log = Loging(
+                "MLF", get_jwt_identity(), user.username, "Search Query", json.dumps(request.args), None, str(request.remote_addr))
+            log.save()
             return record
-        return {'message': 'record not found'}, 404
+        return {'message': 'record not found'}
 
 
 class GetRecCounts_Main_filter(Resource):

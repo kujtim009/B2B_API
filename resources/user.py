@@ -16,6 +16,7 @@ from flask_jwt_extended import (
 )
 import json
 from blacklist import BLACKLIST
+from models.loging import Loging
 
 
 _user_parser = reqparse.RequestParser()
@@ -123,7 +124,11 @@ class UserLogin(Resource):
             access_token = create_access_token(
                 identity=user.ID, fresh=True, expires_delta=expires)
             refresh_token = create_refresh_token(user.ID)
-
+            logPrmData = data.copy()
+            logPrmData.pop('password')
+            log = Loging(
+                None, user.ID, data['username'], "Login success", json.dumps(logPrmData), None, str(request.remote_addr))
+            log.save()
             return {
                 'access_token': access_token,
                 'refresh_token': refresh_token,
@@ -131,6 +136,9 @@ class UserLogin(Resource):
                 'accessLevel': user.access_level,
                 'expiresIn': UserTimePeriod.getTimePeriod(user.ID)
             }, 200
+        log = Loging(
+            None, user.ID, data['username'], "Login Failed", json.dumps(logPrmData), None, str(request.remote_addr))
+        log.save()
         return {'message': 'Invalid credentials'}, 401
 
 

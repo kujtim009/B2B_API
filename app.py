@@ -21,7 +21,7 @@ quotedLocalPc = urllib.parse.quote_plus("DRIVER={SQL Server};SERVER=208.118.231.
                                         prm.sql_username + ";PWD=" + prm.sql_password + ";DATABASE=InsertTool;Trusted_Connection=no;")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect={}".format(
-    quotedDigitalOcean)
+    quotedLocalPc)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_SECRET_KEY'] = prm.jwt_secret_key_stored

@@ -56,8 +56,6 @@ class RecordSchema(ma.ModelSchema):
     @classmethod
     def createDnldFile(cls, data, userID):
         df = pd.DataFrame(data[0])
-        print("SCRIPT PATH2222: ", os.path.abspath(os.curdir))
-        print("SCRIPT PATH33333: ", os.path.dirname(os.path.dirname(__file__)))
 
         df.to_csv(os.path.dirname(os.path.dirname(__file__)) +
                   "/exports/{}.csv".format(userID))
