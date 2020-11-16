@@ -214,6 +214,11 @@ class Cbd_Records_by_main_filter(Resource):
         pBuyer = request.args.get('p_buyer', None)
         pMBuyer = request.args.get('p_multi_buyer', None)
 
+        rawPhone = request.args.get('raw_phone', None)
+        cleanPhone = request.args.get('clean_phone', None)
+        hasEmail = request.args.get('has_email', None)
+        recordsAdded = request.args.get('record_added', None)
+
         city = request.args.get('city', None)
         zipcode = request.args.get('zipcode', None)
 
@@ -223,15 +228,13 @@ class Cbd_Records_by_main_filter(Resource):
         dobFrom = request.args.get('dob_from', None)
         dobTo = request.args.get('dob_to', None)
 
-        allowedProfessions = None
-        allowedProfessionsBuckets = None
         record = None
 
 # check if License type requested is allowed for current user
 
         if state is not None:
             record = CbdRecordSchema.main_filter(
-                state, pBuyer, pMBuyer, city, zipcode, phone, email, dobFrom, dobTo)
+                state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo)
 
         if record:
             user = UserModel.find_by_id(get_jwt_identity())
@@ -250,6 +253,11 @@ class CbdDnldRecords(Resource):
         pBuyer = request.args.get('p_buyer', None)
         pMBuyer = request.args.get('p_multi_buyer', None)
 
+        rawPhone = request.args.get('raw_phone', None)
+        cleanPhone = request.args.get('clean_phone', None)
+        hasEmail = request.args.get('has_email', None)
+        recordsAdded = request.args.get('record_added', None)
+
         city = request.args.get('city', None)
         zipcode = request.args.get('zipcode', None)
 
@@ -260,10 +268,14 @@ class CbdDnldRecords(Resource):
         dobTo = request.args.get('dob_to', None)
 
         record = None
+# @rawPhone varchar(2) = NULL,
+# @hasEmail varchar(2) = NULL,
+# @cleanPhon varchar(2) = NULL,
+# @recordAdded varchar(60) = NULL,
 
         if state is not None:
             record = CbdRecordSchema.mainDownload(
-                state, pBuyer, pMBuyer, city, zipcode, phone, email, dobFrom, dobTo)
+                state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo)
 
         if record:
             path = os.path.dirname(os.path.dirname(
@@ -284,6 +296,11 @@ class Cbd_GetRecCounts_Main_filter(Resource):
         pBuyer = request.args.get('p_buyer', None)
         pMBuyer = request.args.get('p_multi_buyer', None)
 
+        rawPhone = request.args.get('raw_phone', None)
+        cleanPhone = request.args.get('clean_phone', None)
+        hasEmail = request.args.get('has_email', None)
+        recordsAdded = request.args.get('record_added', None)
+
         city = request.args.get('city', None)
         zipcode = request.args.get('zipcode', None)
 
@@ -297,7 +314,7 @@ class Cbd_GetRecCounts_Main_filter(Resource):
 
         if state is not None:
             record = CbdRecordSchema.getCounts_main_filter(
-                state, pBuyer, pMBuyer, city, zipcode, phone, email, dobFrom, dobTo)
+                state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo)
         if record:
             return {'count': record}
         return {'count': 0}
