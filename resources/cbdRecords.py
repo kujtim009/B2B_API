@@ -227,14 +227,14 @@ class Cbd_Records_by_main_filter(Resource):
 
         dobFrom = request.args.get('dob_from', None)
         dobTo = request.args.get('dob_to', None)
-
+        pullRandom = request.args.get('random', None)
         record = None
 
 # check if License type requested is allowed for current user
 
-        if state is not None:
-            record = CbdRecordSchema.main_filter(
-                state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo)
+        # if state is not None:
+        record = CbdRecordSchema.main_filter(
+            state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo, pullRandom)
 
         if record:
             user = UserModel.find_by_id(get_jwt_identity())
@@ -267,15 +267,13 @@ class CbdDnldRecords(Resource):
         dobFrom = request.args.get('dob_from', None)
         dobTo = request.args.get('dob_to', None)
 
-        record = None
-# @rawPhone varchar(2) = NULL,
-# @hasEmail varchar(2) = NULL,
-# @cleanPhon varchar(2) = NULL,
-# @recordAdded varchar(60) = NULL,
+        pullRandom = request.args.get('random', None)
 
-        if state is not None:
-            record = CbdRecordSchema.mainDownload(
-                state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo)
+        record = None
+
+        # if state is not None:
+        record = CbdRecordSchema.mainDownload(
+            state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo, pullRandom)
 
         if record:
             path = os.path.dirname(os.path.dirname(
