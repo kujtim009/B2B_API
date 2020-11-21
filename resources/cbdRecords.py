@@ -310,9 +310,8 @@ class Cbd_GetRecCounts_Main_filter(Resource):
 
         record = None
 
-        if state is not None:
-            record = CbdRecordSchema.getCounts_main_filter(
-                state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo)
+        record = CbdRecordSchema.getCounts_main_filter(
+            state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo)
         if record:
             return {'count': record}
         return {'count': 0}
