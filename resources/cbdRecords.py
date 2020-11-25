@@ -272,8 +272,16 @@ class CbdDnldRecords(Resource):
         record = None
 
         # if state is not None:
-        record = CbdRecordSchema.mainDownload(
-            state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo, pullRandom)
+        try:
+            maxDnldNum = int(UserPrm.getUserParameter(
+                get_jwt_identity(), 'maxDnld').prm_value[1:-1])
+        except:
+            maxDnldNum = 10000
+
+        print("USER PRM MAX DNLD:", maxDnldNum)
+
+        record = CbdRecordSchema.mainDownload(maxDnldNum,
+                                              state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo, pullRandom)
 
         if record:
             path = os.path.dirname(os.path.dirname(
