@@ -156,13 +156,13 @@ class getProfessionsBuckets(Resource):
         except:
             userProfessionBucketSearch = None
 
-        if state is None and licenseType == 'all':
+        # if state is None and licenseType == 'all':
+        #     # print("LICENSE: ", licenseType)
+        #     record = RecordSchema.getProfessions()
+        # else:
             # print("LICENSE: ", licenseType)
-            record = RecordSchema.getProfessions()
-        else:
-            # print("LICENSE: ", licenseType)
-            record = RecordSchema.getProfesionBucketsByLictypeState(
-                licenseType=licenseType, state=state, professionsBucket=userProfessionBucketSearch)
+        record = RecordSchema.getProfesionBucketsByLictypeState(
+            licenseType=licenseType, state=state, professionsBucket=userProfessionBucketSearch)
 
         if record:
             test = {key: value for (key, value) in record}
