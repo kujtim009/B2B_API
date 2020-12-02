@@ -1,5 +1,9 @@
 /exports
+<<<<<<< HEAD
 models/__pycache__/records.cpython-36.pyc
 models/__pycache__/user.cpython-36.pyc
 resources/__pycache__/records.cpython-36.pyc
 resources/__pycache__/user.cpython-36.pyc
+=======
+resources/__pycache__/records.cpython-36.pyc
+>>>>>>> development

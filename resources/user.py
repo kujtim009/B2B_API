@@ -1,6 +1,7 @@
+from datetime import timedelta
 from flask_restful import Resource, reqparse, request
 from passlib.hash import sha256_crypt
-from models.user import UserModel, Userinfo, UserCoins, UserPrm
+from models.user import UserModel, UserTimePeriod, Userinfo, UserCoins, UserPrm
 import models.parameters as prm
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import (
@@ -15,6 +16,7 @@ from flask_jwt_extended import (
 )
 import json
 from blacklist import BLACKLIST
+from models.loging import Loging
 
 
 _user_parser = reqparse.RequestParser()
@@ -110,18 +112,35 @@ class UsersList(Resource):
 class UserLogin(Resource):
     @classmethod
     def post(cls):
+        print(
+            "LOGINNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN")
         data = _user_parser.parse_args()
         user = UserModel.find_by_username(data['username'])
         # if user and safe_str_cmp(user.password, data['password']):
         if user and sha256_crypt.verify(data['password'], user.password):
-            access_token = create_access_token(identity=user.ID, fresh=True)
+
+            if int(user.access_level) >= 2 and UserTimePeriod.timePeriodExists(user.ID):
+                if UserTimePeriod.getTimePeriod(user.ID) <= 0:
+                    return {'message': 'Your subscription has expired, contact us for more details!'}, 401
+            expires = timedelta(minutes=60)
+            access_token = create_access_token(
+                identity=user.ID, fresh=True, expires_delta=expires)
             refresh_token = create_refresh_token(user.ID)
+            logPrmData = data.copy()
+            logPrmData.pop('password')
+            log = Loging(
+                None, user.ID, data['username'], "Login success", json.dumps(logPrmData), None, str(request.remote_addr))
+            log.save()
             return {
                 'access_token': access_token,
                 'refresh_token': refresh_token,
                 'userId': user.ID,
-                'accessLevel': user.access_level
+                'accessLevel': user.access_level,
+                'expiresIn': UserTimePeriod.getTimePeriod(user.ID)
             }, 200
+        log = Loging(
+            None, user.ID, data['username'], "Login Failed", json.dumps(logPrmData), None, str(request.remote_addr))
+        log.save()
         return {'message': 'Invalid credentials'}, 401
 
 
@@ -129,11 +148,17 @@ class CheckAuth(Resource):
     @fresh_jwt_required
     def get(self, user_id):
         user = UserModel.find_by_id(user_id)
+
         if not user:
             return {'message': 'User not found'}, 401
+        else:
+            if int(user.access_level) >= 2 and UserTimePeriod.timePeriodExists(user.ID):
+                if UserTimePeriod.getTimePeriod(user.ID) <= 0:
+                    return {'message': 'Your subscription has expired, contact us for more details!'}, 401
         return {
             'userId': user.ID,
-            'accessLevel': user.access_level
+            'accessLevel': user.access_level,
+            'expiresIn': UserTimePeriod.getTimePeriod(user.ID)
         }, 200
 
     # def get(cls):
@@ -229,6 +254,22 @@ class GetUserCoins(Resource):
         return {'coins': usercoins.C_available}
 
 
+class GetUserTimePeriod(Resource):
+    @fresh_jwt_required
+    def get(self):
+        userId = get_jwt_identity()
+        prmUserID = request.args.get('uid', None)
+        mainUserID = prmUserID if prmUserID else userId
+        userTime = UserTimePeriod.getTimePeriodFull(mainUserID)
+        if userTime is not None:
+            return {
+                'CreatedDate': userTime['CreatedDate'],
+                'ExpirationDate': userTime['ExpirationDate'],
+                'Dayes': userTime['Dayes']
+            }
+        return {'message': "Time period is not asigned to this user!"}, 404
+
+
 class GetUserPrmByName(Resource):
     @fresh_jwt_required
     def get(self, prmName=None):
@@ -286,3 +327,23 @@ class AddUserPrm(Resource):
         else:
             userParameter.save()
             return {'message': 'Parameter Added succesfuly!'}
+
+
+class AddUserTimePeriod(Resource):
+    @fresh_jwt_required
+    def post(self):
+        userId = get_jwt_identity()
+        prmUserID = request.args.get('uid', None)
+        mainUserID = prmUserID if prmUserID else userId
+
+        data = request.get_json()
+        print("JSON:", data)
+
+        userTimePeriod = UserTimePeriod(
+            int(mainUserID), data["CreateDate"], data["ExpirationDate"])
+        if userTimePeriod.timePeriodExists(mainUserID):
+            userTimePeriod.update()
+            return {'message': 'User Time Period Updated succesfuly!'}
+        else:
+            userTimePeriod.save()
+            return {'message': 'User Time Period Added succesfuly!'}

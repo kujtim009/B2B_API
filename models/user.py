@@ -1,6 +1,7 @@
 from db import db
 from flask_jwt_extended import get_jwt_claims, get_jwt_identity
 import json
+from datetime import datetime
 
 
 class UserModel(db.Model):
@@ -76,12 +77,15 @@ class Userinfo(db.Model):
         }
 
     @classmethod
-    def get_user_fields(cls, userid):
-        return cls.query.filter_by(User_id=userid, View_state=1).all()
+    def get_user_fields(cls, userid, project='MLF'):
+        return cls.query.filter_by(User_id=userid, View_state=1, File_name=project).all()
 
     @classmethod
-    def get_all_user_fields(cls, userid):
-        return cls.query.filter_by(User_id=userid).all()
+    def get_all_user_fields(cls, userid, project):
+        if project is None:
+            return cls.query.filter_by(User_id=userid).all()
+        else:
+            return cls.query.filter_by(User_id=userid, File_name=project).all()
 
     @classmethod
     def fieldExist_in_user(cls, userID, fieldname):
@@ -106,6 +110,65 @@ class Userinfo(db.Model):
 
         cls.query.filter_by(User_id=userID).delete()
         db.session.commit()
+
+
+class UserTimePeriod(db.Model):
+    __tablename__ = 'Api_Fgx_User_TimePeriod'
+
+    ID = db.Column(db.Integer, primary_key=True)
+    UserID = db.Column(db.Integer, db.ForeignKey('api_fgx_Users.ID'))
+    CreatedDate = db.Column(db.DateTime, nullable=False,
+                            default=datetime.utcnow)
+    ExpiratioinDate = db.Column(db.DateTime, nullable=False,
+                                default=datetime.utcnow)
+    rlFields = db.relationship('UserModel', backref='timeUser')
+
+    def __init__(self, User_id, CreatedDate, ExpiratioinDate):
+        self.UserID = User_id
+        self.CreatedDate = CreatedDate
+        self.ExpiratioinDate = ExpiratioinDate
+
+    def json(self):
+        return {
+            'UserID': self.UserID,
+            'CreatedDate': self.CreatedDate,
+            'ExpiratioinDate': self.ExpiratioinDate,
+        }
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        record = self.query.filter_by(UserID=self.UserID).first()
+        db.session.delete(record)
+        db.session.commit()
+        self.save()
+        print("UPDATE SESION COMMITED")
+
+    @classmethod
+    def getTimePeriod(cls, userId):
+        record = cls.query.filter_by(UserID=userId).first()
+        if record:
+            # return (record.ExpiratioinDate - record.CreatedDate).days
+            return (record.ExpiratioinDate - datetime.now()).days
+
+    @classmethod
+    def getTimePeriodFull(cls, userId):
+        record = cls.query.filter_by(UserID=userId).first()
+        if record:
+            return {"ExpirationDate": record.ExpiratioinDate.strftime("%m/%d/%Y"),
+                    "CreatedDate": record.CreatedDate.strftime("%m/%d/%Y"),
+                    "Dayes": cls.getTimePeriod(userId)
+                    }
+        return None
+
+    @classmethod
+    def timePeriodExists(cls, userID):
+        record = cls.query.filter_by(UserID=userID).count()
+        if record >= 1:
+            return True
+        return False
 
 
 class UserCoins(db.Model):
@@ -234,14 +297,26 @@ class UserPrm(db.Model):
                             return False
         return True
 
+    # @classmethod
+    # def getAllowedProfessions(cls, userId, prmName):
+    #     record = cls.query.filter_by(uid=userId, prm_name=prmName).first()
+
+    #     if record:
+    #         listOfAllowedProfessions = eval(record.prm_value)
+    #         if "professions" in listOfAllowedProfessions:
+    #             if listOfAllowedProfessions["professions"] != "":
+
+    #                 return listOfAllowedProfessions["professions"]
+    #         return None
+
     @classmethod
     def getAllowedProfessions(cls, userId, prmName):
         record = cls.query.filter_by(uid=userId, prm_name=prmName).first()
 
         if record:
             listOfAllowedProfessions = eval(record.prm_value)
-            if "professions" in listOfAllowedProfessions:
-                if listOfAllowedProfessions["professions"] != "":
+            if prmName.lower() in listOfAllowedProfessions:
+                if listOfAllowedProfessions[prmName.lower()] != "":
 
-                    return listOfAllowedProfessions["professions"]
+                    return listOfAllowedProfessions[prmName.lower()]
             return None
