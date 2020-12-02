@@ -148,6 +148,13 @@ class RecordSchema(ma.ModelSchema):
         return result
 
     @classmethod
+    def getProfessionsBuckets(cls):
+        # sqlquery = "select DGX_Profession, count(DGX_Profession) from Master_layout with(nolock) group by DGX_Profession order by DGX_Profession asc"
+        sqlquery = "select *From api_fgx_profession where count > 1 and DGX_Profession not like '%X'"
+        result = db.engine.execute(sqlquery)
+        return result
+
+    @classmethod
     def getProfesionByLictypeState(cls, state=None, licenseType='all', professions=None):
         # print("GET PROFESSION: ", [None if licenseType ==
         #                            'all' else licenseType, state, professions])
