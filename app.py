@@ -7,6 +7,7 @@ import urllib
 import routes.mlfRoutes as mlfRoutes
 import routes.userRoutes as userRoutes
 import routes.cbdRoutes as cbdRoutes
+import routes.prmRoutes as prmRoutes
 import models.parameters as prm
 from resources.user import TestAPI
 from models.user import UserModel
@@ -90,6 +91,7 @@ api.add_resource(TestAPI, '/test')
 userRoutes.insertUserRoutes(api)
 mlfRoutes.insertMlfRoutes(api)
 cbdRoutes.insertCbdRoutes(api)
+prmRoutes.insertPrmRoutes(api)
 
 
 if __name__ == '__main__':

@@ -41,17 +41,11 @@ class PrmRecordSchema(ma.ModelSchema):
 
     @classmethod
     def mainDownload(cls, *fields):
-        # print("SEARCH FIELDS: ", fields)
         parameters = [x for x in fields]
-        # parameters.insert(0, cls.record_output)
-        if license is None and state is None and prof is None:
-            return jsonify({'Records': 'Search input is missing!'})
-        else:
-            print("EXECUTED!!!!!!!!")
-
-            result = db.engine.execute(
-                'Fgx_api_prvmr_main_downloader ?, ?, ?, ?, ?, ?, ?', parameters)
-
+        print("MAIN DOWNLOAD: 0000000", parameters)
+        result = db.engine.execute(
+            'Fgx_api_prvmr_main_downloader ?, ?, ?, ?, ?, ?, ?', parameters)
+        print("MAIN DOWNLOAD: 11111")
         record_schema = PrmRecordSchema(
             many=True, only=cls.get_user_fields(project='PRM'))
         output = record_schema.dump(result)

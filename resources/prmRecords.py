@@ -122,24 +122,6 @@ class PrmgetZip(Resource):
         return {'message': 'record not found'}, 404
 
 
-# class getProfessionsSubBuckets(Resource):
-#     @jwt_required
-#     def get(self):
-#         state = request.args.get('state', None)
-#         professionBucket = request.args.get(
-#             'professionBucket', NotImplementedError)
-
-#         userId = get_jwt_identity()
-#         record = RecordSchema.getProfesionSubBucketsByBucketState(
-#             state=state, professionsBucket=professionBucket)
-
-#         if record:
-#             test = {key: value for (key, value) in record}
-
-#             return test
-#         return {'message': 'record not found'}, 404
-
-
 class GetAllFieldNames(Resource):
     @jwt_required
     def get(self):
@@ -149,79 +131,19 @@ class GetAllFieldNames(Resource):
         return {'message': 'record not found'}, 404
 
 
-# class dnldRecords(Resource):
-#     @jwt_required
-#     def get(self):
-#         print("Start")
-#         licenseType = request.args.get('license_type', None)
-#         state = request.args.get('state', None)
-#         state = None if state == 'all' else state
-#         prof = request.args.get('profession', None)
-
-#         profBucket = request.args.get('profession_bucket', None)
-#         profSubBucket = request.args.get('profession_sub_bucket', None)
-#         profSubBucket2 = request.args.get('profession_sub_bucket2', None)
-
-#         county = request.args.get('county', None)
-#         city = request.args.get('city', None)
-#         zipcode = request.args.get('zipcode', None)
-
-#         license = request.args.get('license', None)
-#         phone = request.args.get('phone', None)
-#         email = request.args.get('email', None)
-#         employees = request.args.get('employees', None)
-#         company_name = request.args.get('company_name', None)
-#         srch_type_comp = request.args.get('srch_type_comp', None)
-#         lic_owner = request.args.get('lic_owner', None)
-#         srch_type_licO = request.args.get('srch_type_licO', None)
-
-#         allowedProfessions = None
-#         allowedProfessionsBuckets = None
-#         record = None
-
-# # check if License type requested is allowed for current user
-#         if licenseType is not None and licenseType != "all":
-#             if UserPrm.isTypeInPrm(get_jwt_identity(), 'Lic_types', licenseType):
-
-#                 if prof is not None:
-#                     if UserPrm.isProfessionInPrm(get_jwt_identity(), 'Professions', prof):
-#                         allowedProfessions = UserPrm.getAllowedProfessions(
-#                             get_jwt_identity(), 'Professions')
-#                         record = RecordSchema.mainDownload(licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, profSubBucket, profSubBucket2, county, city, zipcode, license,
-#                                                            phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
-#                         print("FIRST: ", licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, profSubBucket, profSubBucket2, county, city, zipcode, license,
-#                               phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
-#                 elif profBucket is not None:
-#                     if UserPrm.isProfessionInPrm(get_jwt_identity(), 'ProfessionBuckets', profBucket):
-#                         allowedProfessionsBuckets = UserPrm.getAllowedProfessions(
-#                             get_jwt_identity(), 'ProfessionBuckets')
-#                         record = RecordSchema.mainDownload(licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, profSubBucket, profSubBucket2, county, city, zipcode, license,
-#                                                            phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
-#                         print("SECOND: ", licenseType, state, prof, allowedProfessions, profBucket, allowedProfessionsBuckets, profSubBucket, profSubBucket2, county, city, zipcode, license,
-#                               phone, email, employees, company_name, srch_type_comp, lic_owner, srch_type_licO)
-
-#             else:
-#                 return {'message': 'You are not authorized to access this data'}, 401
-#         else:
-#             return {'message': 'You are not authorized to access this dataaa'}, 404
-#         print("SCRIPT PATH: ", os.path.join(
-#             os.path.dirname(__file__), '../'))
-#         if record:
-#             print("SCRIPT PATH: ", os.path.join(
-#                 os.path.dirname(__file__), '../'))
-#             path = os.path.dirname(os.path.dirname(
-#                 __file__)) + "/exports/{}.csv".format(record)
-#             return send_file(path, as_attachment=True)
-#         return {'message': 'record not found'}, 404
-
-
 class Prm_Records_by_main_filter(Resource):
     @jwt_required
     def get(self):
 
         state = request.args.get('state', None)
+        state = None if state == "all" else state
+
         zip = request.args.get('zip', None)
+        zip = None if zip == "all" else zip
+
         status = request.args.get('status', None)
+        status = None if status == "all" else status
+
         priceFrom = request.args.get('price_from', None)
         priceTo = request.args.get('price_to', None)
 
