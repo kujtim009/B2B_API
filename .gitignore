@@ -1,2 +1,7 @@
 /exports
+<<<<<<< HEAD
 *.pyc
+=======
+resources/__pycache__/records.cpython-36.pyc
+*.pyc
+>>>>>>> e006ec16f0323e3974e5150e0c20893906834bc6

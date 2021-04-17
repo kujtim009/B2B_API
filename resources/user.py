@@ -73,10 +73,10 @@ class Add_allowed_fields(Resource):
                 userid = row["User_id"]
 
             fieldName = row["Field_name"]
-
-            if Userinfo.fieldExist_in_user(userid, fieldName) is not True:
+            fileName = row["File_name"]
+            if Userinfo.fieldExist_in_user(userid, fieldName, fileName) is not True:
                 userfields = Userinfo(
-                    userid, row["View_state"], row["File_name"], fieldName, row["Order"])
+                    userid, row["View_state"], fileName, fieldName, row["Order"])
                 userfields.save_to_db()
             else:
                 message = ", one or more fields already existed on the list!"

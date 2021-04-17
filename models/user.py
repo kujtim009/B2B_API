@@ -88,9 +88,10 @@ class Userinfo(db.Model):
             return cls.query.filter_by(User_id=userid, File_name=project).all()
 
     @classmethod
-    def fieldExist_in_user(cls, userID, fieldname):
+    def fieldExist_in_user(cls, userID, fieldname, fileName):
+        print('IF FIELD EXISTS:', userID, fieldname, fileName)
         record = cls.query.filter_by(
-            User_id=userID, Field_name=fieldname).count()
+            User_id=userID, Field_name=fieldname, File_name=fileName).count()
         if record >= 1:
             return True
         return False
