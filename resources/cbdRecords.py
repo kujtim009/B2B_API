@@ -225,6 +225,8 @@ class Cbd_Records_by_main_filter(Resource):
         phone = request.args.get('phone', None)
         email = request.args.get('email', None)
 
+        deliveryVerified = request.args.get('delivery_verified', None)
+
         dobFrom = request.args.get('dob_from', None)
         dobTo = request.args.get('dob_to', None)
         pullRandom = request.args.get('random', None)
@@ -234,7 +236,7 @@ class Cbd_Records_by_main_filter(Resource):
 
         # if state is not None:
         record = CbdRecordSchema.main_filter(
-            state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo, pullRandom)
+            state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, deliveryVerified, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo, pullRandom)
 
         if record:
             user = UserModel.find_by_id(get_jwt_identity())
@@ -263,7 +265,7 @@ class CbdDnldRecords(Resource):
 
         phone = request.args.get('phone', None)
         email = request.args.get('email', None)
-
+        deliveryVerified = request.args.get('delivery_verified', None)
         dobFrom = request.args.get('dob_from', None)
         dobTo = request.args.get('dob_to', None)
 
@@ -281,7 +283,7 @@ class CbdDnldRecords(Resource):
         print("USER PRM MAX DNLD:", maxDnldNum)
 
         record = CbdRecordSchema.mainDownload(maxDnldNum,
-                                              state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo, pullRandom)
+                                              state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, deliveryVerified, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo, pullRandom)
 
         if record:
             path = os.path.dirname(os.path.dirname(
@@ -313,13 +315,15 @@ class Cbd_GetRecCounts_Main_filter(Resource):
         phone = request.args.get('phone', None)
         email = request.args.get('email', None)
 
+        deliveryVerified = request.args.get('delivery_verified', None)
+
         dobFrom = request.args.get('dob_from', None)
         dobTo = request.args.get('dob_to', None)
 
         record = None
 
         record = CbdRecordSchema.getCounts_main_filter(
-            state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo)
+            state, pBuyer, pMBuyer, rawPhone, hasEmail, cleanPhone, deliveryVerified, recordsAdded, city, zipcode, phone, email, dobFrom, dobTo)
         if record:
             return {'count': record}
         return {'count': 0}

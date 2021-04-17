@@ -50,7 +50,7 @@ class CbdRecordSchema(ma.ModelSchema):
             print("EXECUTED!!!!!!!!")
 
             result = db.engine.execute(
-                'Fgx_api_cbd_main_downloader ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
+                'Fgx_api_cbd_main_downloader ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
 
         record_schema = CbdRecordSchema(
             many=True, only=cls.get_user_fields(project='CBD'))
@@ -68,7 +68,7 @@ class CbdRecordSchema(ma.ModelSchema):
         parameters.insert(0, cls.record_output)
 
         result = db.engine.execute(
-            'Fgx_api_cbd_main_filter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
+            'Fgx_api_cbd_main_filter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', parameters)
 
         fields = cls.get_user_fields()
         record_schema = CbdRecordSchema(
@@ -80,7 +80,7 @@ class CbdRecordSchema(ma.ModelSchema):
     @classmethod
     def getCounts_main_filter(cls, *fields):
         result = db.engine.execute(
-            'Fgx_api_cbd_main_counter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
+            'Fgx_api_cbd_main_counter ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', fields)
         for rowe in result:
             return rowe[0]
         return result
